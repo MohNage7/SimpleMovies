@@ -3,6 +3,7 @@
     <dimen name="activity_vertical_margin">12.0dp</dimen>
     <dimen name="sp_20">15.0sp</dimen>
     <dimen name="dp_16">12.0dp</dimen>
+    <dimen name="dp_32">24dp</dimen>
     <dimen name="sp_18">13.5sp</dimen>
     <dimen name="sp_14">10.5sp</dimen>
     <dimen name="nav_profile_img_width">45.0dp</dimen>

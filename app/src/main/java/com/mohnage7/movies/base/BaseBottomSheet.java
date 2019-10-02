@@ -24,7 +24,7 @@ public abstract class BaseBottomSheet extends BottomSheetDialogFragment {
     public void onViewReady(Dialog dialog) {
     }
 
- 
+
     /**
      * this method should be override by every childs
      *
@@ -80,18 +80,4 @@ public abstract class BaseBottomSheet extends BottomSheetDialogFragment {
         });
 
     }
-
-    public void setSheetStateExpanded() {
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-    }
-
-
-    public void showToast(String message) {
-        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
-    }
-
-    public void showToast(int message) {
-        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
-    }
-
 }

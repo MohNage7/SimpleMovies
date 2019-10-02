@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:fitsSystemWindows="true"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     tools:context=".view.ui.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -32,7 +33,21 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
     <include layout="@layout/layout_no_data" />
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/layout_search"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
+    <include
+        layout="@layout/layout_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

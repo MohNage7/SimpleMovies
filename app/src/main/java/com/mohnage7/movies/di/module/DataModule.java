@@ -6,7 +6,6 @@ import android.os.Build;
 import com.mohnage7.movies.repository.MoviesRepository;
 import com.mohnage7.movies.service.RestApiService;
 
-import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.TimeUnit;
@@ -18,10 +17,8 @@ import javax.net.ssl.X509TrustManager;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -117,7 +114,7 @@ public class DataModule {
     }
 
     @Provides
-    MoviesRepository providesRepository(RestApiService apiService) {
+    MoviesRepository providesMoviesRepository(RestApiService apiService) {
         return new MoviesRepository(apiService);
     }
 }

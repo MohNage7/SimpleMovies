@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 import com.mohnage7.movies.MoviesApplication;
 import com.mohnage7.movies.base.DataWrapper;
 import com.mohnage7.movies.model.Movie;
+import com.mohnage7.movies.model.Video;
 import com.mohnage7.movies.repository.MoviesRepository;
 import com.mohnage7.movies.utils.Constants;
 
@@ -23,6 +24,14 @@ public class MoviesViewModel extends ViewModel {
     }
 
     public LiveData<DataWrapper<List<Movie>>> getMoviesList(@Constants.FilterBy String filter) {
-        return repository.getArticles(filter);
+        return repository.getMovies(filter);
+    }
+
+    public LiveData<DataWrapper<List<Movie>>> search(String query) {
+        return repository.search(query);
+    }
+
+    public LiveData<DataWrapper<List<Video>>> getVideosList(int movieId) {
+        return repository.getVideos(movieId);
     }
 }

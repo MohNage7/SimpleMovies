@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -55,5 +56,8 @@ dependencies {
     // I have used this library only for future image loading usage.
     // to be able to load images as circle view
     implementation 'de.hdodenhof:circleimageview:3.0.1'
+    implementation files('libs/YouTubeAndroidPlayerApi.jar')
+    // shimmer for loading animation by fb
+    implementation 'com.facebook.shimmer:shimmer:0.3.0'
 
 }

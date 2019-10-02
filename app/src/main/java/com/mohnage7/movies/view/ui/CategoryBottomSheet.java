@@ -3,14 +3,16 @@ package com.mohnage7.movies.view.ui;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.mohnage7.movies.R;
-import com.mohnage7.movies.base.BaseBottomSheet;
 import com.mohnage7.movies.model.Category;
 import com.mohnage7.movies.utils.Constants;
 import com.mohnage7.movies.view.adapter.CategoryAdapter;
@@ -21,11 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class CategoryBottomSheet extends BaseBottomSheet implements OnCategoryClickListener {
+public class CategoryBottomSheet extends BottomSheetDialogFragment implements OnCategoryClickListener {
 
-    public static final String SELECTED_CATEGORY = "selected_category";
+    static final String SELECTED_CATEGORY = "selected_category";
 
     @BindView(R.id.paymentRecyclerView)
     RecyclerView marketRecyclerView;
@@ -34,11 +37,25 @@ public class CategoryBottomSheet extends BaseBottomSheet implements OnCategoryCl
     private Category selectedCategory;
     private OnCategorySelectedListener onCategorySelectedInterActionListener;
 
-
     @Override
-    protected int getContentView() {
-        return R.layout.bottomsheet_category_filter;
+    public void setupDialog(@NonNull Dialog dialog, int style) {
+        super.setupDialog(dialog, style);
+        if (getActivity() == null || getActivity().isFinishing()) return;
+        View rootView = getActivity().getLayoutInflater().inflate(R.layout.bottomsheet_category_filter, null, false);
+        ButterKnife.bind(this, rootView);
+        dialog.setContentView(rootView);
+        setBottomBarStyle(dialog);
+        setupPaymentMethodsRecycler();
     }
+
+    private void setBottomBarStyle(@NonNull Dialog dialog) {
+        if (dialog.getWindow() != null) {
+            FrameLayout bottomSheet = dialog.getWindow().findViewById(R.id.design_bottom_sheet);
+            bottomSheet.setBackgroundResource(R.color.transparent);
+            setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme);
+        }
+    }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,13 +64,6 @@ public class CategoryBottomSheet extends BaseBottomSheet implements OnCategoryCl
         if (bundle != null && bundle.containsKey(SELECTED_CATEGORY)) {
             selectedCategory = bundle.getParcelable(SELECTED_CATEGORY);
         }
-    }
-
-    @Override
-    public void onViewReady(Dialog dialog) {
-        super.onViewReady(dialog);
-        // init adapter and layout manger
-        setupPaymentMethodsRecycler();
     }
 
     @Override
@@ -70,7 +80,7 @@ public class CategoryBottomSheet extends BaseBottomSheet implements OnCategoryCl
     private void setupPaymentMethodsRecycler() {
         List<Category> paymentMethodList = getCategoriesList();
         paymentMethodsAdapter = new CategoryAdapter(paymentMethodList, this);
-        marketRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        marketRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         marketRecyclerView.setAdapter(paymentMethodsAdapter);
         // if there's default selected category display check icon for it.
         if (selectedCategory != null) {

@@ -13,6 +13,8 @@ public class Constants {
     public static final String POPULAR = "popular";
     public static final String TOP_RATED = "top_rated";
     public static final String UP_COMING = "upcoming";
+    public static final String YOUTUBE_KEY = "AIzaSyDTsUcgRF_0mn-6bUoRRB3jqvoL0iPl85k";
+
     private Constants() {
         // restrict class creation
     }

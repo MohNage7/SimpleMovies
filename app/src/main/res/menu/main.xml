@@ -6,7 +6,8 @@
         android:orderInCategory="100"
         android:icon="@drawable/ic_search"
         android:title="@string/action_search"
-        app:showAsAction="always" />
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="always|withText|always|collapseActionView" />
     <item
         android:id="@+id/action_filter_by"
         android:orderInCategory="100"

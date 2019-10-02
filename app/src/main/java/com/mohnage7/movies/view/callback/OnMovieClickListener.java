@@ -4,6 +4,6 @@ import android.view.View;
 
 import com.mohnage7.movies.model.Movie;
 
-public interface OnArticleClickListener {
+public interface OnMovieClickListener {
     void onMovieClick(Movie article, View view);
 }

@@ -137,8 +137,13 @@ public class Movie implements Parcelable {
         this.posterPath = posterPath;
     }
 
-    public String getBackdropPath() {
-        return backdropPath;
+
+    @Nullable
+    public String getBackdropPath(Context context) {
+        if (backdropPath != null && !backdropPath.isEmpty()) {
+            return context.getString(R.string.image_base_url) + backdropPath;
+        } else
+            return null;
     }
 
     public void setBackdropPath(String backdropPath) {
