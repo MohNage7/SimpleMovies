@@ -1,19 +1,36 @@
 package com.mohnage7.movies.base;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 public class DataWrapper<T> {
-    private T data;
-    private BaseError baseError;
+    @NonNull
+    public final Status status;
 
-    public DataWrapper(T data, BaseError baseError) {
+    @Nullable
+    public final T data;
+
+    @Nullable
+    public final String message;
+
+    public DataWrapper(@NonNull Status status, @Nullable T data, @Nullable String message) {
+        this.status = status;
         this.data = data;
-        this.baseError = baseError;
+        this.message = message;
     }
 
-    public T getData() {
-        return data;
+    public static <T> DataWrapper<T> success(@NonNull T data) {
+        return new DataWrapper<>(Status.SUCCESS, data, null);
     }
 
-    public BaseError getBaseError() {
-        return baseError;
+    public static <T> DataWrapper<T> error(@NonNull String msg, @Nullable T data) {
+        return new DataWrapper<>(Status.ERROR, data, msg);
     }
+
+    public static <T> DataWrapper<T> loading(@Nullable T data) {
+        return new DataWrapper<>(Status.LOADING, data, null);
+    }
+
+    public enum Status {SUCCESS, ERROR, LOADING}
+
 }

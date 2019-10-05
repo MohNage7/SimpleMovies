@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -15,14 +16,16 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.mohnage7.movies.R;
 import com.mohnage7.movies.base.BaseActivity;
-import com.mohnage7.movies.base.BaseError;
 import com.mohnage7.movies.model.Movie;
 import com.mohnage7.movies.model.Video;
+import com.mohnage7.movies.utils.Constants;
 import com.mohnage7.movies.view.adapter.VideoAdapter;
+import com.mohnage7.movies.viewmodel.MovieDetailViewModel;
 import com.mohnage7.movies.viewmodel.MoviesViewModel;
 import com.squareup.picasso.Picasso;
 
@@ -40,8 +43,8 @@ public class MovieDetailsActivity extends BaseActivity {
     TextView titleTxtView;
     @BindView(R.id.movie_description)
     TextView descTxtView;
-    //    @BindView(R.id.movie_poster_img_view)
-//    ImageView posterImageView;
+    @BindView(R.id.videos_tv)
+    TextView videosTxtView;
     @BindView(R.id.movie_rating)
     TextView movieRatingTxtView;
     @BindView(R.id.movie_date_txt_view)
@@ -56,9 +59,11 @@ public class MovieDetailsActivity extends BaseActivity {
     AppBarLayout mAppBarLayout;
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
+    @BindView(R.id.shimmer_loading_layout)
+    ShimmerFrameLayout shimmerFrameLayout;
 
     private Movie movie;
-    private MoviesViewModel viewModel;
+    private MovieDetailViewModel viewModel;
 
     @Override
     protected int layoutRes() {
@@ -71,7 +76,7 @@ public class MovieDetailsActivity extends BaseActivity {
         // inject views
         ButterKnife.bind(this);
         // init view model
-        viewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(MovieDetailViewModel.class);
 
         setupToolbar();
         // get movie object
@@ -126,7 +131,18 @@ public class MovieDetailsActivity extends BaseActivity {
         descTxtView.setText(movie.getOverview());
         movieRatingTxtView.setText(String.valueOf(movie.getVoteAverage()));
         movieReleaseDateTxtView.setText(getString(R.string.release_date, movie.getReleaseDate()));
-        Picasso.get().load(movie.getBackdropPath(this)).into(backdropImgView);
+        Picasso.get().load(Constants.IMAGE_BASE_URL + movie.getBackdropPath()).into(backdropImgView);
+    }
+
+    private void showLoadingLayout() {
+        shimmerFrameLayout.startShimmer();
+        shimmerFrameLayout.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+    }
+    private void hideLoadingLayout() {
+        shimmerFrameLayout.stopShimmer();
+        shimmerFrameLayout.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
     }
 
 
@@ -138,14 +154,25 @@ public class MovieDetailsActivity extends BaseActivity {
         if (intent != null) {
             movie = intent.getParcelableExtra(MOVIE_EXTRA);
             if (movie != null) {
-                viewModel.getVideosList(movie.getId()).observe(this, listDataWrapper -> {
-                    if (listDataWrapper.getBaseError() != null) {
-                        handleError(listDataWrapper.getBaseError());
-                    } else {
-                        setupRecycler(listDataWrapper.getData());
+                viewModel.getVideosList(movie.getId()).observe(this, dataWrapper -> {
+                    switch (dataWrapper.status) {
+                        case LOADING:
+                            showLoadingLayout();
+                            break;
+                        case SUCCESS:
+                            hideLoadingLayout();
+                            setupRecycler(dataWrapper.data.getVideos());
+                            break;
+                        case ERROR:
+                            hideLoadingLayout();
+                            handleError(dataWrapper.message);
+                            break;
+                        default:
+                            break;
                     }
                 });
             } else {
+                hideLoadingLayout();
                 showToast(R.string.movie_load_failure);
                 finish();
             }
@@ -158,8 +185,9 @@ public class MovieDetailsActivity extends BaseActivity {
         recyclerView.setAdapter(videoAdapter);
     }
 
-    private void handleError(BaseError baseError) {
-
+    private void handleError(String message) {
+        videosTxtView.setVisibility(View.GONE);
+        showToast(message);
     }
 
     @Override

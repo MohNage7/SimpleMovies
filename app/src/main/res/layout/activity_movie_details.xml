@@ -72,31 +72,39 @@
                 tools:text="Peter Parker and his friends go on a summer trip to Europe. However, they will hardly be able to rest - Peter will have to agree to help Nick Fury uncover the mystery of creatures that cause natural disasters" />
 
 
-            <TextView
-                android:id="@+id/trailers_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/movie_description"
-                android:padding="@dimen/dp_16"
-                android:text="@string/trailers"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/sp_16"
-                android:textStyle="bold" />
 
             <View
                 android:id="@+id/line"
                 style="@style/vertical_line_thin"
                 android:layout_below="@+id/movie_date_txt_view" />
 
+
+            <TextView
+                android:id="@+id/videos_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/movie_description"
+                android:padding="@dimen/dp_16"
+                android:text="@string/videos"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/sp_16"
+                android:textStyle="bold" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/trailers_tv"
+                android:layout_below="@+id/videos_tv"
                 android:layout_marginStart="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_16"
                 android:layout_marginBottom="@dimen/dp_16"
                 android:nestedScrollingEnabled="false" />
+
+            <include
+                layout="@layout/layout_loading_videos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/videos_tv" />
 
         </RelativeLayout>
 

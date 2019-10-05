@@ -3,8 +3,12 @@ package com.mohnage7.movies.di.module;
 import android.app.Application;
 import android.os.Build;
 
+import com.mohnage7.movies.api.RestApiService;
+import com.mohnage7.movies.db.AppExecutors;
+import com.mohnage7.movies.db.MovieDatabase;
+import com.mohnage7.movies.repository.MovieDetailsRepository;
 import com.mohnage7.movies.repository.MoviesRepository;
-import com.mohnage7.movies.service.RestApiService;
+import com.mohnage7.movies.utils.LiveDataCallAdapterFactory;
 
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
@@ -21,11 +25,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.mohnage7.movies.utils.Constants.API_KEY;
 import static com.mohnage7.movies.utils.Constants.BASE_URL;
+import static com.mohnage7.movies.utils.Constants.CONNECTION_TIMEOUT;
+import static com.mohnage7.movies.utils.Constants.READ_TIMEOUT;
+import static com.mohnage7.movies.utils.Constants.WRITE_TIMEOUT;
 
 @Module
 public class DataModule {
@@ -39,11 +45,11 @@ public class DataModule {
     @Singleton
     Retrofit providesRetrofit(OkHttpClient okHttpClient) {
         return new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(BASE_URL)
                 .client(okHttpClient)
                 //converts Retrofit response into Observable
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(new LiveDataCallAdapterFactory())
                 .build();
     }
 
@@ -54,39 +60,10 @@ public class DataModule {
     @Singleton
     OkHttpClient providesHttpClient(HttpLoggingInterceptor httpLoggingInterceptor) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        /*
-           The following code will trust all certificate in the hand shake protocol between
-           The device's OS and the server and it's not recommended in production environment
-           I will use it only to test on kitkat and change it later if i had time.
-           // TODO: 9/29/2019 Replace with allowing only specific server certificate https://developer.android.com/training/articles/security-ssl.html#CommonProblems
-         */
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-            try {
-                TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-                    public X509Certificate[] getAcceptedIssuers() {
-                        return new X509Certificate[0];
-                    }
-
-                    @Override
-                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                    }
-
-                    @Override
-                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                    }
-                }};
-
-                SSLContext sc = SSLContext.getInstance("SSL");
-                sc.init(null, trustAllCerts, new SecureRandom());
-                builder.sslSocketFactory(sc.getSocketFactory());
-                builder.hostnameVerifier((arg0, arg1) -> true);
-            } catch (Exception ignored) {
-            }
-        }
         // add request time out
-        builder.connectTimeout(20, TimeUnit.SECONDS);
-        builder.readTimeout(40, TimeUnit.SECONDS);
-        builder.writeTimeout(40, TimeUnit.SECONDS);
+        builder.connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS);
+        builder.readTimeout(READ_TIMEOUT, TimeUnit.SECONDS);
+        builder.writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);
         // Add logging into
         builder.interceptors().add(httpLoggingInterceptor);
         builder.addInterceptor(chain -> {
@@ -114,7 +91,26 @@ public class DataModule {
     }
 
     @Provides
-    MoviesRepository providesMoviesRepository(RestApiService apiService) {
-        return new MoviesRepository(apiService);
+    @Singleton
+    AppExecutors providesAppExcutor() {
+        return AppExecutors.getInstance();
     }
+
+    @Provides
+    MovieDetailsRepository providesMovieDetailsRepository(RestApiService apiService, AppExecutors appExecutors) {
+        return new MovieDetailsRepository(apiService, appExecutors, application);
+    }
+
+    @Provides
+    MoviesRepository providesMoviesRepository(RestApiService apiService, MovieDatabase database, AppExecutors appExecutors) {
+        return new MoviesRepository(apiService, database, appExecutors);
+    }
+
+    @Provides
+    @Singleton
+    MovieDatabase providesDatabase(){
+        return MovieDatabase.getDatabaseInstance(application);
+    }
+
+
 }

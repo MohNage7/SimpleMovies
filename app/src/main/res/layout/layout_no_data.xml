@@ -17,8 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/no_data_iv"
-        android:layout_gravity="center_horizontal|center_vertical"
         android:padding="@dimen/dp_16"
+        android:textColor="@color/colorPrimaryText"
         android:text="@string/no_data_available"
         android:textAlignment="center"
         android:textSize="@dimen/sp_18" />

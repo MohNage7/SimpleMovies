@@ -4,5 +4,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:cardBackgroundColor="@color/soft_grey"
-    app:cardCornerRadius="@dimen/dp_8"
     app:cardElevation="@dimen/dp_2" />

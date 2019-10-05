@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.mohnage7.movies.R;
-import com.mohnage7.movies.model.Category;
+import com.mohnage7.movies.model.Filter;
 import com.mohnage7.movies.utils.Constants;
-import com.mohnage7.movies.view.adapter.CategoryAdapter;
+import com.mohnage7.movies.view.adapter.FilterAdapter;
 import com.mohnage7.movies.view.callback.OnCategoryClickListener;
 import com.mohnage7.movies.view.callback.OnCategorySelectedListener;
 
@@ -32,9 +32,9 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment implements On
 
     @BindView(R.id.paymentRecyclerView)
     RecyclerView marketRecyclerView;
-    private List<Category> categoryList;
-    private CategoryAdapter paymentMethodsAdapter;
-    private Category selectedCategory;
+    private List<Filter> filterList;
+    private FilterAdapter paymentMethodsAdapter;
+    private Filter selectedFilter;
     private OnCategorySelectedListener onCategorySelectedInterActionListener;
 
     @Override
@@ -62,7 +62,7 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment implements On
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
         if (bundle != null && bundle.containsKey(SELECTED_CATEGORY)) {
-            selectedCategory = bundle.getParcelable(SELECTED_CATEGORY);
+            selectedFilter = bundle.getParcelable(SELECTED_CATEGORY);
         }
     }
 
@@ -78,13 +78,13 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment implements On
     }
 
     private void setupPaymentMethodsRecycler() {
-        List<Category> paymentMethodList = getCategoriesList();
-        paymentMethodsAdapter = new CategoryAdapter(paymentMethodList, this);
+        List<Filter> filterList = getCategoriesList();
+        paymentMethodsAdapter = new FilterAdapter(filterList, this);
         marketRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         marketRecyclerView.setAdapter(paymentMethodsAdapter);
         // if there's default selected category display check icon for it.
-        if (selectedCategory != null) {
-            onCategoryClick(selectedCategory);
+        if (selectedFilter != null) {
+            onCategoryClick(selectedFilter);
         }
     }
 
@@ -93,25 +93,25 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment implements On
      *
      * @return List of categories
      */
-    private List<Category> getCategoriesList() {
-        categoryList = new ArrayList<>();
-        categoryList.add(new Category(getString(R.string.popular), Constants.POPULAR, R.drawable.ic_popular));
-        categoryList.add(new Category(getString(R.string.top_rated), Constants.TOP_RATED, R.drawable.ic_top_rated));
-        categoryList.add(new Category(getString(R.string.upcoming), Constants.UP_COMING, R.drawable.ic_upcoming));
-        return categoryList;
+    private List<Filter> getCategoriesList() {
+        filterList = new ArrayList<>();
+        filterList.add(new Filter(getString(R.string.popular), Constants.POPULAR, R.drawable.ic_popular));
+        filterList.add(new Filter(getString(R.string.top_rated), Constants.TOP_RATED, R.drawable.ic_top_rated));
+        filterList.add(new Filter(getString(R.string.upcoming), Constants.UP_COMING, R.drawable.ic_upcoming));
+        return filterList;
     }
 
     /**
      * this method sets new selected category inside the list and refresh the list UI
      * to display/hide check icon.
      *
-     * @param selectedCategory
+     * @param selectedFilter
      */
     @Override
-    public void onCategoryClick(Category selectedCategory) {
-        this.selectedCategory = selectedCategory;
-        for (Category category : categoryList) {
-            category.setChecked(category.equals(selectedCategory));
+    public void onCategoryClick(Filter selectedFilter) {
+        this.selectedFilter = selectedFilter;
+        for (Filter filter : filterList) {
+            filter.setChecked(filter.equals(selectedFilter));
         }
         paymentMethodsAdapter.notifyDataSetChanged();
     }
@@ -119,6 +119,6 @@ public class CategoryBottomSheet extends BottomSheetDialogFragment implements On
     @OnClick(R.id.select_category_btn)
     void onCategorySelected() {
         dismiss();
-        onCategorySelectedInterActionListener.onCategoryClick(selectedCategory);
+        onCategorySelectedInterActionListener.onCategoryClick(selectedFilter);
     }
 }

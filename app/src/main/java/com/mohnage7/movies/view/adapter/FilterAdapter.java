@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mohnage7.movies.R;
 import com.mohnage7.movies.base.BaseViewHolder;
-import com.mohnage7.movies.model.Category;
+import com.mohnage7.movies.model.Filter;
 import com.mohnage7.movies.view.callback.OnCategoryClickListener;
 
 import java.util.List;
@@ -21,12 +21,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CategoryAdapter extends RecyclerView.Adapter<BaseViewHolder> {
-    private List<Category> categoryList;
+public class FilterAdapter extends RecyclerView.Adapter<BaseViewHolder> {
+    private List<Filter> filterList;
     private OnCategoryClickListener onArticleClickListener;
 
-    public CategoryAdapter(List<Category> categoryList, OnCategoryClickListener onCategoryClickListener) {
-        this.categoryList = categoryList;
+    public FilterAdapter(List<Filter> filterList, OnCategoryClickListener onCategoryClickListener) {
+        this.filterList = filterList;
         this.onArticleClickListener = onCategoryClickListener;
     }
 
@@ -44,8 +44,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     @Override
     public int getItemCount() {
-        if (categoryList != null && !categoryList.isEmpty()) {
-            return categoryList.size();
+        if (filterList != null && !filterList.isEmpty()) {
+            return filterList.size();
         } else {
             return 0;
         }
@@ -67,18 +67,18 @@ public class CategoryAdapter extends RecyclerView.Adapter<BaseViewHolder> {
         @Override
         public void bindViews(int position) {
             super.bindViews(position);
-            Category category = categoryList.get(position);
-            categoryTitle.setText(category.getName());
-            categoryImgView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), category.getDrawable()));
-            if (category.isChecked()) {
+            Filter filter = filterList.get(position);
+            categoryTitle.setText(filter.getName());
+            categoryImgView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), filter.getDrawable()));
+            if (filter.isChecked()) {
                 Drawable img = itemView.getContext().getResources().getDrawable(R.drawable.ic_check);
                 categoryTitle.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
             } else {
                 categoryTitle.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
             }
             itemView.setOnClickListener(v -> {
-                category.setChecked(true);
-                onArticleClickListener.onCategoryClick(category);
+                filter.setChecked(true);
+                onArticleClickListener.onCategoryClick(filter);
             });
         }
 

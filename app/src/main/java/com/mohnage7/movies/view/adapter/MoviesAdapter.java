@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.mohnage7.movies.R;
 import com.mohnage7.movies.base.BaseViewHolder;
 import com.mohnage7.movies.model.Movie;
+import com.mohnage7.movies.utils.Constants;
 import com.mohnage7.movies.view.callback.OnMovieClickListener;
 import com.squareup.picasso.Picasso;
 
@@ -70,13 +71,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<BaseViewHolder> {
             super.bindViews(position);
             Movie movie = movieList.get(position);
             movieTitle.setText(movie.getTitle());
-            displayArticleImage(movie.getPosterPath(itemView.getContext()));
+            displayArticleImage(movie.getPosterPath());
             itemView.setOnClickListener(v -> onMovieClickListener.onMovieClick(movie, itemView));
         }
 
         private void displayArticleImage(String imageUrl) {
             if (imageUrl != null) {
-                Picasso.get().load(imageUrl).error(R.drawable.placeholder).into(movieImageView);
+                Picasso.get().load(Constants.IMAGE_BASE_URL + imageUrl).error(R.drawable.placeholder).into(movieImageView);
             } else {
                 Picasso.get().load(R.drawable.placeholder).into(movieImageView);
             }

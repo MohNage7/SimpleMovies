@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,14 +24,13 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.mohnage7.movies.R;
 import com.mohnage7.movies.base.BaseActivity;
-import com.mohnage7.movies.base.BaseError;
-import com.mohnage7.movies.model.Category;
+import com.mohnage7.movies.model.Filter;
 import com.mohnage7.movies.model.Movie;
 import com.mohnage7.movies.utils.Constants;
 import com.mohnage7.movies.view.adapter.MoviesAdapter;
 import com.mohnage7.movies.view.adapter.SearchAdapter;
-import com.mohnage7.movies.view.callback.OnMovieClickListener;
 import com.mohnage7.movies.view.callback.OnCategorySelectedListener;
+import com.mohnage7.movies.view.callback.OnMovieClickListener;
 import com.mohnage7.movies.viewmodel.MoviesViewModel;
 
 import java.util.List;
@@ -61,9 +61,11 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
     ShimmerFrameLayout shimmerFrameLayout;
     @BindView(R.id.search_card_view)
     CardView searchLayout;
+    @BindView(R.id.progress_bar)
+    ProgressBar progressBar;
 
     private MoviesViewModel moviesViewModel;
-    private Category selectedCategory;
+    private Filter selectedFilter;
 
     @Override
     protected int layoutRes() {
@@ -74,9 +76,35 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setSupportActionBar(toolbar);
-        moviesViewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
+        // set swipe listener
         swipeRefreshLayout.setOnRefreshListener(this);
-        getArticles(POPULAR);
+        // init view model
+        moviesViewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
+        // load movies from network or db source
+        getMovies(getSelectedFilter().getCategoryPath());
+        // listen to search data
+        moviesViewModel.search().observe(this, dataWrapper -> {
+            switch (dataWrapper.status) {
+                case LOADING:
+                    showSearchLoading();
+                    break;
+                case ERROR:
+                    handleSearchError(dataWrapper.message);
+                    break;
+                case SUCCESS:
+                    setupSearchAdapter(dataWrapper.data);
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
+    private void showSearchLoading() {
+        searchLayout.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+        noSearchDataTxtView.setVisibility(View.GONE);
+        searchRecyclerView.setVisibility(View.GONE);
     }
 
     @Override
@@ -125,49 +153,61 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_filter_by) {
-            //showPopupMenu(vItem);
             CategoryBottomSheet categoryBottomSheet = new CategoryBottomSheet();
-            if (selectedCategory != null) {
-                Bundle bundle = new Bundle();
-                bundle.putParcelable(SELECTED_CATEGORY, selectedCategory);
-                categoryBottomSheet.setArguments(bundle);
-            }
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(SELECTED_CATEGORY, getSelectedFilter());
+            categoryBottomSheet.setArguments(bundle);
             categoryBottomSheet.show(getSupportFragmentManager(), null);
         }
         return true;
     }
 
+    /**
+     * @return default @selectedFilter if data is going to be fetched for the first time
+     * or the filter that has been selected by the user.
+     */
+    private Filter getSelectedFilter() {
+        if (selectedFilter == null)
+            selectedFilter = new Filter(getString(R.string.popular), POPULAR, R.drawable.ic_popular);
+        return selectedFilter;
+    }
 
-    private void getArticles(@Constants.FilterBy String filter) {
-        showLoadingLayout();
-        moviesViewModel.getMoviesList(filter).observe(this, dataWrapper -> {
-            swipeRefreshLayout.setRefreshing(false);
-            if (dataWrapper.getBaseError() != null) {
-                handleMoviesListError(dataWrapper.getBaseError());
-            } else {
-                setupArticlesRecycler(dataWrapper.getData());
+
+    private void getMovies(@Constants.FilterBy String filter) {
+        moviesViewModel.getMoviesList().observe(this, dataWrapper -> {
+            switch (dataWrapper.status) {
+                case LOADING:
+                    showLoadingLayout();
+                    break;
+                case SUCCESS:
+                    hideLoadingLayout();
+                    setupMoviesRecycler(dataWrapper.data);
+                    break;
+                case ERROR:
+                    hideLoadingLayout();
+                    handleMoviesListError(dataWrapper.message);
+                    break;
+                default:
+                    break;
             }
         });
+        moviesViewModel.setFilterMovieBy(filter);
     }
 
     private void searchInMovies(String query) {
-        moviesViewModel.search(query).observe(this, dataWrapper -> {
-            swipeRefreshLayout.setRefreshing(false);
-            if (dataWrapper.getBaseError() != null) {
-                handleSearchError(dataWrapper.getBaseError());
-            } else {
-                setupSearchAdapter(dataWrapper.getData());
-            }
-        });
+        moviesViewModel.setSearchBy(query);
     }
 
     private void showLoadingLayout() {
         shimmerFrameLayout.startShimmer();
         shimmerFrameLayout.setVisibility(View.VISIBLE);
         moviesRecyclerView.setVisibility(View.GONE);
+        noDataLayout.setVisibility(View.GONE);
     }
 
     private void hideLoadingLayout() {
+        if (swipeRefreshLayout.isRefreshing())
+            swipeRefreshLayout.setRefreshing(false);
         shimmerFrameLayout.stopShimmer();
         shimmerFrameLayout.setVisibility(View.GONE);
         moviesRecyclerView.setVisibility(View.VISIBLE);
@@ -184,41 +224,33 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         }
     }
 
+
+    private void handleMoviesListError(String message) {
+        setDataViewsVisibility(false);
+        noDataTxtView.setText(message);
+    }
+
+    private void handleSearchError(String message) {
+        setSearchViewsVisibility(false);
+        noSearchDataTxtView.setText(message == null || message.isEmpty() ? getString(R.string.no_data_found) : message);
+    }
+
     private void setSearchViewsVisibility(boolean dataAvailable) {
+        searchLayout.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
         if (dataAvailable) {
-            searchLayout.setVisibility(View.VISIBLE);
             searchRecyclerView.setVisibility(View.VISIBLE);
-            noDataLayout.setVisibility(View.GONE);
+            noSearchDataTxtView.setVisibility(View.GONE);
         } else {
             searchRecyclerView.setVisibility(View.GONE);
-            noDataLayout.setVisibility(View.VISIBLE);
+            noSearchDataTxtView.setVisibility(View.VISIBLE);
         }
     }
 
-    private void handleMoviesListError(BaseError baseError) {
-        setDataViewsVisibility(false);
-        hideLoadingLayout();
-        if (baseError.getErrorCode() == 500) {
-            noDataTxtView.setText(getString(R.string.server_error));
-        } else {
-            noDataTxtView.setText(baseError.getErrorMessage());
-        }
-    }
-
-    private void handleSearchError(BaseError baseError) {
-        setSearchViewsVisibility(false);
-        hideLoadingLayout();
-        if (baseError.getErrorCode() == 500) {
-            noSearchDataTxtView.setText(getString(R.string.server_error));
-        } else {
-            noSearchDataTxtView.setText(baseError.getErrorMessage());
-        }
-    }
-
-    private void setupArticlesRecycler(List<Movie> articles) {
+    private void setupMoviesRecycler(List<Movie> moviesList) {
         hideLoadingLayout();
         setDataViewsVisibility(true);
-        MoviesAdapter adapter = new MoviesAdapter(articles, this);
+        MoviesAdapter adapter = new MoviesAdapter(moviesList, this);
         GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
         moviesRecyclerView.setLayoutManager(layoutManager);
         moviesRecyclerView.setAdapter(adapter);
@@ -234,24 +266,24 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
 
     @Override
     public void onRefresh() {
-        getArticles(POPULAR);
+        moviesViewModel.setFilterMovieBy(selectedFilter.getCategoryPath());
     }
 
     @Override
-    public void onMovieClick(Movie article, View view) {
+    public void onMovieClick(Movie movie, View view) {
         Intent intent = new Intent(this, MovieDetailsActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putParcelable(MOVIE_EXTRA, article);
+        bundle.putParcelable(MOVIE_EXTRA, movie);
         intent.putExtras(bundle);
         startActivity(intent);
     }
 
     @Override
-    public void onCategoryClick(Category selectedCategory) {
-        this.selectedCategory = selectedCategory;
+    public void onCategoryClick(Filter selectedFilter) {
+        this.selectedFilter = selectedFilter;
         // change activity title
-        toolbar.setTitle(selectedCategory.getName());
+        toolbar.setTitle(selectedFilter.getName());
         // refresh movies list
-        getArticles(selectedCategory.getCategoryPath());
+        moviesViewModel.setFilterMovieBy(selectedFilter.getCategoryPath());
     }
 }

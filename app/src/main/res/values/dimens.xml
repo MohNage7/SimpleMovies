@@ -16,4 +16,5 @@
     <dimen name="img_width_no_data">200dp</dimen>
     <dimen name="img_height_no_data">200dp</dimen>
     <dimen name="dp_32">32dp</dimen>
+    <dimen name="dp_200">200dp</dimen>
 </resources>

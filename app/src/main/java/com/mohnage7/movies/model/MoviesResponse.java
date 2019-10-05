@@ -1,5 +1,6 @@
 package com.mohnage7.movies.model;
 
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.mohnage7.movies.base.BaseResponse;

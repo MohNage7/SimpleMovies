@@ -1,12 +1,14 @@
 package com.mohnage7.movies.model;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.mohnage7.movies.R;
 
 import javax.annotation.Nullable;
 
@@ -14,7 +16,11 @@ import javax.annotation.Nullable;
  * Created by mohnage7 on 2/28/2018.
  */
 
+@Entity(tableName = "movie")
 public class Movie implements Parcelable {
+    @SerializedName("vote_count")
+    @Expose
+    private Integer voteCount;
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
         @Override
         public Movie createFromParcel(Parcel in) {
@@ -26,12 +32,6 @@ public class Movie implements Parcelable {
             return new Movie[size];
         }
     };
-    @SerializedName("vote_count")
-    @Expose
-    private Integer voteCount;
-    @SerializedName("id")
-    @Expose
-    private Integer id;
     @SerializedName("vote_average")
     @Expose
     private Double voteAverage;
@@ -53,10 +53,15 @@ public class Movie implements Parcelable {
     @SerializedName("release_date")
     @Expose
     private String releaseDate;
+    private String filter;
 
     public Movie() {
     }
 
+    @PrimaryKey
+    @NonNull
+    @SerializedName("id")
+    private Integer id;
     protected Movie(Parcel in) {
         if (in.readByte() == 0) {
             voteCount = null;
@@ -83,6 +88,7 @@ public class Movie implements Parcelable {
         backdropPath = in.readString();
         overview = in.readString();
         releaseDate = in.readString();
+        filter = in.readString();
     }
 
     public Integer getVoteCount() {
@@ -125,25 +131,27 @@ public class Movie implements Parcelable {
         this.popularity = popularity;
     }
 
+
     @Nullable
-    public String getPosterPath(Context context) {
-        if (posterPath != null && !posterPath.isEmpty()) {
-            return context.getString(R.string.image_base_url) + posterPath;
-        } else
-            return null;
+    public String getPosterPath() {
+        return posterPath;
     }
 
     public void setPosterPath(String posterPath) {
         this.posterPath = posterPath;
     }
 
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
+    }
 
     @Nullable
-    public String getBackdropPath(Context context) {
-        if (backdropPath != null && !backdropPath.isEmpty()) {
-            return context.getString(R.string.image_base_url) + backdropPath;
-        } else
-            return null;
+    public String getBackdropPath() {
+        return backdropPath;
     }
 
     public void setBackdropPath(String backdropPath) {
@@ -202,5 +210,6 @@ public class Movie implements Parcelable {
         dest.writeString(backdropPath);
         dest.writeString(overview);
         dest.writeString(releaseDate);
+        dest.writeString(filter);
     }
 }
