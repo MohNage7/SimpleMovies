@@ -6,7 +6,7 @@
     android:fitsSystemWindows="true"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".view.ui.MainActivity">
+    tools:context=".view.ui.MoviesActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
