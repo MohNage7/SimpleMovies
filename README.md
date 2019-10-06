@@ -72,7 +72,7 @@ When the entry is loaded from the database for the first time, NetworkBoundResou
 * MovieDatabase: is responsible to provide us one and only object to access our db.
 * AppExecutors: is used to write and read from db.
 
-## Api and base classes
+## Api and Base classes
 * ApiResponse: a generic class for handling responses from retrofit 
 * RestApiService: provides and end point for our remote service
 * BaseActivity: is extended by any activity in the app. it declares unified structure and contains common methods for our activities.
@@ -93,14 +93,27 @@ When the entry is loaded from the database for the first time, NetworkBoundResou
 * DataModule: define classes and methods which provide dependencies
 * DataComponent: is used by Dagger 2 to generate code which uses the modules to fulfill the requested dependencies.
 
+## Libraries 
+* [ButterKnife](https://jakewharton.github.io/butterknife/) for injecting views
+* [Retrofit](https://square.github.io/retrofit/) for consuming REST APIs
+* [Dagger2](https://github.com/google/dagger) for dependency injection 
+* [Picasso](https://square.github.io/picasso/) for loading images from remote servers
+* [YouTubeAndroidPlayerApi](https://developers.google.com/youtube/android/player/) to preview and play videos 
+* [Facebook Shimmer](https://github.com/facebook/shimmer-android) library as loading animation
+* [Room](https://developer.android.com/topic/libraries/architecture/room) as presistance library. 
+* [Gson](https://github.com/google/gson) as data parser.
+
+
 ## Questions
 * What is the principle of sole responsibility? What's its purpose?
   It states that every object have single responsiblity and that responsibility should be entirly encapsulated by the class. 
   There should never be more than one reason for a class to change. to achive high cohesion and low coupling between modules that make testing , maintainance and readability easier.
 
 * What characteristics does, in your opinion, have a "good" code or clean code?
-  - Clean code is simple, direct and well-written code. it should be providing one way rather than many ways of doing one thing.             it makes the code more robust and easy to read, maintain and scale 
-characteristics that indicates that we are writting clean code are : 
+
+Clean code is simple, direct and well-written code. it should be providing one way rather than many ways of doing one thing.             it makes the code more robust and easy to read, maintain and scale. 
+ 
+Characteristics that indicates that we are writting clean code are : 
   - Efficiency  
   - Maintainability 
   - Well Structured 
