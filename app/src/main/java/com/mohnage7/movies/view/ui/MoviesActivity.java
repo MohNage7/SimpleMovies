@@ -24,7 +24,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.mohnage7.movies.R;
 import com.mohnage7.movies.base.BaseActivity;
-import com.mohnage7.movies.model.Filter;
+import com.mohnage7.movies.model.Category;
 import com.mohnage7.movies.model.Movie;
 import com.mohnage7.movies.utils.Constants;
 import com.mohnage7.movies.view.adapter.MoviesAdapter;
@@ -65,7 +65,7 @@ public class MoviesActivity extends BaseActivity implements SwipeRefreshLayout.O
     ProgressBar progressBar;
 
     private MoviesViewModel moviesViewModel;
-    private Filter selectedFilter;
+    private Category selectedCategory;
 
     @Override
     protected int layoutRes() {
@@ -81,7 +81,7 @@ public class MoviesActivity extends BaseActivity implements SwipeRefreshLayout.O
         // init view model
         moviesViewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
         // load movies from network or db source
-        getMovies(getSelectedFilter().getCategoryPath());
+        getMovies(getSelectedCategory().getCategoryPath());
         // listen to search data
         moviesViewModel.search().observe(this, dataWrapper -> {
             switch (dataWrapper.status) {
@@ -152,10 +152,10 @@ public class MoviesActivity extends BaseActivity implements SwipeRefreshLayout.O
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_filter_by) {
+        if (item.getItemId() == R.id.action_categories) {
             CategoryBottomSheet categoryBottomSheet = new CategoryBottomSheet();
             Bundle bundle = new Bundle();
-            bundle.putParcelable(SELECTED_CATEGORY, getSelectedFilter());
+            bundle.putParcelable(SELECTED_CATEGORY, getSelectedCategory());
             categoryBottomSheet.setArguments(bundle);
             categoryBottomSheet.show(getSupportFragmentManager(), null);
         }
@@ -163,17 +163,17 @@ public class MoviesActivity extends BaseActivity implements SwipeRefreshLayout.O
     }
 
     /**
-     * @return default @selectedFilter if data is going to be fetched for the first time
-     * or the filter that has been selected by the user.
+     * @return default @selectedCategory if data is going to be fetched for the first time
+     * or the category that has been selected by the user.
      */
-    private Filter getSelectedFilter() {
-        if (selectedFilter == null)
-            selectedFilter = new Filter(getString(R.string.popular), POPULAR, R.drawable.ic_popular);
-        return selectedFilter;
+    private Category getSelectedCategory() {
+        if (selectedCategory == null)
+            selectedCategory = new Category(getString(R.string.popular), POPULAR, R.drawable.ic_popular);
+        return selectedCategory;
     }
 
 
-    private void getMovies(@Constants.FilterBy String filter) {
+    private void getMovies(@Constants.FilterBy String category) {
         moviesViewModel.getMoviesList().observe(this, dataWrapper -> {
             switch (dataWrapper.status) {
                 case LOADING:
@@ -191,7 +191,7 @@ public class MoviesActivity extends BaseActivity implements SwipeRefreshLayout.O
                     break;
             }
         });
-        moviesViewModel.setFilterMovieBy(filter);
+        moviesViewModel.setFilterMovieBy(category);
     }
 
     private void searchInMovies(String query) {
@@ -266,7 +266,7 @@ public class MoviesActivity extends BaseActivity implements SwipeRefreshLayout.O
 
     @Override
     public void onRefresh() {
-        moviesViewModel.setFilterMovieBy(selectedFilter.getCategoryPath());
+        moviesViewModel.setFilterMovieBy(selectedCategory.getCategoryPath());
     }
 
     @Override
@@ -280,11 +280,11 @@ public class MoviesActivity extends BaseActivity implements SwipeRefreshLayout.O
     }
 
     @Override
-    public void onCategoryClick(Filter selectedFilter) {
-        this.selectedFilter = selectedFilter;
+    public void onCategoryClick(Category selectedCategory) {
+        this.selectedCategory = selectedCategory;
         // change activity title
-        toolbar.setTitle(selectedFilter.getName());
+        toolbar.setTitle(selectedCategory.getName());
         // refresh movies list
-        moviesViewModel.setFilterMovieBy(selectedFilter.getCategoryPath());
+        moviesViewModel.setFilterMovieBy(selectedCategory.getCategoryPath());
     }
 }

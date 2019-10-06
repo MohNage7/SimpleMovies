@@ -53,7 +53,7 @@ public class Movie implements Parcelable {
     @SerializedName("release_date")
     @Expose
     private String releaseDate;
-    private String filter;
+    private String category;
 
     public Movie() {
     }
@@ -88,7 +88,7 @@ public class Movie implements Parcelable {
         backdropPath = in.readString();
         overview = in.readString();
         releaseDate = in.readString();
-        filter = in.readString();
+        category = in.readString();
     }
 
     public Integer getVoteCount() {
@@ -141,12 +141,12 @@ public class Movie implements Parcelable {
         this.posterPath = posterPath;
     }
 
-    public String getFilter() {
-        return filter;
+    public String getCategory() {
+        return category;
     }
 
-    public void setFilter(String filter) {
-        this.filter = filter;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     @Nullable
@@ -210,6 +210,6 @@ public class Movie implements Parcelable {
         dest.writeString(backdropPath);
         dest.writeString(overview);
         dest.writeString(releaseDate);
-        dest.writeString(filter);
+        dest.writeString(category);
     }
 }

@@ -16,9 +16,6 @@ public interface MovieDao {
     @Insert(onConflict = REPLACE)
     void insertAll(List<Movie> movieList);
 
-    @Query("DELETE FROM movie")
-    void deleteAll();
-
-    @Query("SELECT * FROM movie WHERE filter = :filter")
-    LiveData<List<Movie>> getAllMovies(String filter);
+    @Query("SELECT * FROM movie WHERE category = :category")
+    LiveData<List<Movie>> getAllMovies(String category);
 }

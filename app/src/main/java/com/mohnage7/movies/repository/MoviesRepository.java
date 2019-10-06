@@ -42,37 +42,37 @@ public class MoviesRepository {
         refreshRateLimiter = new RefreshRateLimiter(TimeUnit.MINUTES, CACHE_TIMEOUT);
     }
 
-    public LiveData<DataWrapper<List<Movie>>> getMovies(String filter) {
+    public LiveData<DataWrapper<List<Movie>>> getMovies(String category) {
         return new NetworkBoundResource<List<Movie>, MoviesResponse>(appExecutors) {
 
             @Override
             protected void saveCallResult(@NonNull MoviesResponse item) {
-                addFilterToEveryMovie(item.getMovieList(), filter);
+                addFilterToEveryMovie(item.getMovieList(), category);
                 movieDao.insertAll(item.getMovieList());
             }
 
             @Override
             protected boolean shouldFetch(@Nullable List<Movie> data) {
-                return data == null || data.isEmpty() || refreshRateLimiter.shouldFetch(filter);
+                return data == null || data.isEmpty() || refreshRateLimiter.shouldFetch(category);
             }
 
             @NonNull
             @Override
             protected LiveData<List<Movie>> loadFromDb() {
-                return movieDao.getAllMovies(filter);
+                return movieDao.getAllMovies(category);
             }
 
             @NonNull
             @Override
             protected LiveData<ApiResponse<MoviesResponse>> createCall() {
-                return apiService.getMovies(filter);
+                return apiService.getMovies(category);
             }
         }.getAsLiveData();
     }
 
-    private void addFilterToEveryMovie(List<Movie> movieList, String filter) {
+    private void addFilterToEveryMovie(List<Movie> movieList, String category) {
         for (Movie movie : movieList) {
-            movie.setFilter(filter);
+            movie.setCategory(category);
         }
     }
 

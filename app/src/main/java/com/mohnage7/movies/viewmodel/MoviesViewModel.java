@@ -22,15 +22,15 @@ public class MoviesViewModel extends ViewModel {
     @Inject
     MoviesRepository repository;
 
-    private MutableLiveData<String> filterBy = new MutableLiveData<>();
+    private MutableLiveData<String> caregory = new MutableLiveData<>();
     private MutableLiveData<String> searchBy = new MutableLiveData<>();
     private LiveData<DataWrapper<List<Movie>>> moviesList;
     private LiveData<DataWrapper<List<Movie>>> searchMoviesList;
 
     public MoviesViewModel() {
         MoviesApplication.getInstance().getDataComponent().inject(this);
-        filterBy.setValue(POPULAR);
-        moviesList = Transformations.switchMap(filterBy, filter -> repository.getMovies(filter));
+        caregory.setValue(POPULAR);
+        moviesList = Transformations.switchMap(caregory, category -> repository.getMovies(category));
         searchMoviesList = Transformations.switchMap(searchBy, query -> repository.search(query));
     }
 
@@ -44,7 +44,7 @@ public class MoviesViewModel extends ViewModel {
 
 
     public void setFilterMovieBy(@Constants.FilterBy String filter) {
-        filterBy.setValue(filter);
+        caregory.setValue(filter);
     }
 
     public void setSearchBy(String query) {

@@ -1,7 +1,7 @@
 package com.mohnage7.movies.view.callback;
 
-import com.mohnage7.movies.model.Filter;
+import com.mohnage7.movies.model.Category;
 
 public interface OnCategoryClickListener {
-    void onCategoryClick(Filter filter);
+    void onCategoryClick(Category category);
 }

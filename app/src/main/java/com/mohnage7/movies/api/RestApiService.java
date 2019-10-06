@@ -13,8 +13,8 @@ import retrofit2.http.Query;
 
 public interface RestApiService {
 
-    @GET("movie/{filter_by}")
-    LiveData<ApiResponse<MoviesResponse>> getMovies(@Path("filter_by") String filterBy);
+    @GET("movie/{category}")
+    LiveData<ApiResponse<MoviesResponse>> getMovies(@Path("category") String category);
 
 
     @GET("movie/{id}/videos")

@@ -17,9 +17,6 @@ public interface VideosDao {
     @Insert(onConflict = REPLACE)
     void insertAll(MovieVideos movieVideos);
 
-    @Query("DELETE FROM movie_videos")
-    void deleteAll();
-
     @Query("SELECT * FROM movie_videos WHERE id = :movieId")
     LiveData<MovieVideos> getAllVideos(int movieId);
 }

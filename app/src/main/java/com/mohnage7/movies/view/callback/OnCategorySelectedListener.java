@@ -2,8 +2,8 @@ package com.mohnage7.movies.view.callback;
 
 import androidx.annotation.NonNull;
 
-import com.mohnage7.movies.model.Filter;
+import com.mohnage7.movies.model.Category;
 
 public interface OnCategorySelectedListener {
-    void onCategoryClick(@NonNull Filter selectedFilter);
+    void onCategoryClick(@NonNull Category selectedCategory);
 }
