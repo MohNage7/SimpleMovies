@@ -26,7 +26,6 @@ import com.mohnage7.movies.model.Video;
 import com.mohnage7.movies.utils.Constants;
 import com.mohnage7.movies.view.adapter.VideoAdapter;
 import com.mohnage7.movies.viewmodel.MovieDetailViewModel;
-import com.mohnage7.movies.viewmodel.MoviesViewModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -194,6 +193,6 @@ public class MovieDetailsActivity extends BaseActivity {
     public void onBackPressed() {
         super.onBackPressed();
         // exits activity with image transaction animation
-        supportFinishAfterTransition();
+        overridePendingTransition(R.anim.no_animation, R.anim.anim_slide_down);
     }
 }

@@ -276,6 +276,7 @@ public class MainActivity extends BaseActivity implements SwipeRefreshLayout.OnR
         bundle.putParcelable(MOVIE_EXTRA, movie);
         intent.putExtras(bundle);
         startActivity(intent);
+        overridePendingTransition(R.anim.anim_slide_up, R.anim.no_animation);
     }
 
     @Override
