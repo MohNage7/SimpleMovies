@@ -12,7 +12,7 @@ A Simple movies application that is built with MVVM , Dagger2 , LiveData and Roo
 In this project we will consume themoviedb APIs to build a simple app that have the following features
 
 * Fetch Movies by categories (Popular, Top rated and upcoming ). 
-* Show every movie details in seperate screen
+* Show every movie details in separate screen
 * Cache data offline. 
 * Search for movies.
 
