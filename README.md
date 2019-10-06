@@ -110,6 +110,7 @@ When the entry is loaded from the database for the first time, NetworkBoundResou
   There should never be more than one reason for a class to change. to achive high cohesion and low coupling between modules that make testing , maintainance and readability easier.
 
 * What characteristics does, in your opinion, have a "good" code or clean code?
+  
   Clean code is simple, direct and well-written code. it should be providing one way rather than many ways of doing one thing.             it makes the code more robust and easy to read, maintain and scale. 
 
   Characteristics that indicates that we are writting clean code are : 
