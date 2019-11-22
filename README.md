@@ -103,24 +103,3 @@ When the entry is loaded from the database for the first time, NetworkBoundResou
 * [Room](https://developer.android.com/topic/libraries/architecture/room) as presistance library. 
 * [Gson](https://github.com/google/gson) as data parser.
 
-
-## Questions
-* What is the principle of sole responsibility? What's its purpose?
-  It states that every object have single responsiblity and that responsibility should be entirly encapsulated by the class. 
-  There should never be more than one reason for a class to change. to achive high cohesion and low coupling between modules that make testing , maintainance and readability easier.
-
-* What characteristics does, in your opinion, have a "good" code or clean code?
-  
-  Clean code is simple, direct and well-written code. it should be providing one way rather than many ways of doing one thing.             it makes the code more robust and easy to read, maintain and scale. 
-
-  Characteristics that indicates that we are writting clean code are : 
-    - Efficiency  
-    - Maintainability 
-    - Well Structured 
-    - Readable 
-    - Reliability 
-    - Follows Standards 
-    - Extensibility 
-   
-
-
