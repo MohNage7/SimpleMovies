@@ -1,4 +1,8 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
+apply plugin:'kotlin-kapt'
+
 
 android {
     compileSdkVersion 28
@@ -11,15 +15,30 @@ android {
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
     }
+
     buildTypes {
+        debug {
+            buildConfigField("String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
+            buildConfigField("String", "YOUTUBE_KEY", "\"AIzaSyDTsUcgRF_0mn-6bUoRRB3jqvoL0iPl85k\"")
+            buildConfigField("String", "IMAGE_BASE_URL", "\"https://image.tmdb.org/t/p/w342\"")
+            buildConfigField "String", "API_KEY", '"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkYzgwNDFkZmUyYmU1MWRiNTJlMGZmYWFkYWJlYmM4ZCIsInN1YiI6IjVhOTcyMzQwMGUwYTI2MDE1ZjAwNTMyMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.sogWARNxbqkf9fduFd1vetw8KUyDn5xY1Bb_4sVJS1o"'
+        }
         release {
+            buildConfigField("String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
+            buildConfigField("String", "YOUTUBE_KEY", "\"AIzaSyDTsUcgRF_0mn-6bUoRRB3jqvoL0iPl85k\"")
+            buildConfigField("String", "IMAGE_BASE_URL", "\"https://image.tmdb.org/t/p/w342\"")
+            buildConfigField "String", "API_KEY", '"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkYzgwNDFkZmUyYmU1MWRiNTJlMGZmYWFkYWJlYmM4ZCIsInN1YiI6IjVhOTcyMzQwMGUwYTI2MDE1ZjAwNTMyMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.sogWARNxbqkf9fduFd1vetw8KUyDn5xY1Bb_4sVJS1o"'
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 
@@ -28,22 +47,38 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // UI
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
-    implementation 'com.jakewharton:butterknife:10.0.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+
+    // loading images
     implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.5'
+
+    // network
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.2.1'
     implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    implementation "com.google.dagger:dagger:$rootProject.daggerVersion"
-    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
-    implementation "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
-    annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
+
+    // videos
     implementation files('libs/YouTubeAndroidPlayerApi.jar')
-    implementation 'com.facebook.shimmer:shimmer:0.3.0'
+
+    // loading animation
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
+    // Room - Data persistence
     implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
-    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
+    kapt "android.arch.persistence.room:compiler:$roomVersion"
+
+    implementation "androidx.core:core-ktx:1.2.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    // Koin for DI Android
+    implementation "org.koin:koin-android:$koin_version"
+    implementation "org.koin:koin-android-scope:$koin_version"
+    implementation "org.koin:koin-android-viewmodel:$koin_version"
+}
+repositories {
+    mavenCentral()
 }

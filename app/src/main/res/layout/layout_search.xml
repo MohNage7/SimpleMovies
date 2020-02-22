@@ -2,20 +2,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/search_card_view"
+    android:id="@+id/searchLayout"
     android:visibility="gone"
     app:cardBackgroundColor="@color/colorPrimary"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/search_recycler_view"
+        android:id="@+id/searchRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_16"
         android:layout_marginEnd="@dimen/dp_16" />
 
     <ProgressBar
-        android:id="@+id/progress_bar"
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:text="@string/no_data_found"
         android:gravity="center_horizontal"
-        android:id="@+id/no_search_data_tv"
+        android:id="@+id/noSearchDataTxtView"
         android:padding="@dimen/dp_16"
         android:layout_gravity="center_vertical"
         android:textColor="@color/colorPrimaryText"

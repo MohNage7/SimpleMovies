@@ -8,6 +8,8 @@
     <dimen name="sp_14">14sp</dimen>
     <dimen name="nav_profile_img_width">60dp</dimen>
     <dimen name="nav_profile_img_height">60dp</dimen>
+    <dimen name="img_search_width">100dp</dimen>
+    <dimen name="img_search_height">100dp</dimen>
     <dimen name="dp_2">2dp</dimen>
     <dimen name="sp_16">16sp</dimen>
     <dimen name="article_image_height">200dp</dimen>
