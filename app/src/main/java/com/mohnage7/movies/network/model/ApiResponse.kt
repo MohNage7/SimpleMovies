@@ -1,4 +1,4 @@
-package com.mohnage7.movies.network
+package com.mohnage7.movies.network.model
 
 
 import retrofit2.Response

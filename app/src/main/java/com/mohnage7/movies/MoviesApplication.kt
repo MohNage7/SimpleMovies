@@ -1,30 +1,25 @@
 package com.mohnage7.movies
 
 import android.app.Application
+import com.mohnage7.movies.db.di.dataBaseModule
+import com.mohnage7.movies.features.moviedetails.di.movieDetailsModule
+import com.mohnage7.movies.features.movies.di.moviesModule
+import com.mohnage7.movies.network.di.networkModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
-import com.mohnage7.movies.di.component.DaggerDataComponent
-import com.mohnage7.movies.di.component.DataComponent
-import com.mohnage7.movies.di.module.DataModule
 
 class MoviesApplication : Application() {
-    var dataComponent: DataComponent
-        internal set
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
-        initDataComponent()
+        startKoinInjection();
     }
 
-    private fun initDataComponent() {
-        dataComponent = DaggerDataComponent.builder().dataModule(DataModule(this))
-                .build()
-        dataComponent.inject(this)
-    }
-
-    companion object {
-
-        var instance: MoviesApplication? = null
-            private set
+    private fun startKoinInjection() {
+        startKoin {
+            androidContext(this@MoviesApplication)
+            modules(listOf(networkModule, dataBaseModule, moviesModule, movieDetailsModule))
+        }
     }
 }

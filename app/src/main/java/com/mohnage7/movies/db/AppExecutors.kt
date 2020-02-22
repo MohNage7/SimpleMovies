@@ -27,16 +27,4 @@ class AppExecutors {
             mainThreadHandler.post(command)
         }
     }
-
-    companion object {
-
-        private var instance: AppExecutors? = null
-
-        fun getInstance(): AppExecutors {
-            if (instance == null) {
-                instance = AppExecutors()
-            }
-            return instance
-        }
-    }
 }

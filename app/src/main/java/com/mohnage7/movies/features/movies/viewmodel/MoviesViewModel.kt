@@ -4,22 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-
-import com.mohnage7.movies.MoviesApplication
-import com.mohnage7.movies.base.DataWrapper
 import com.mohnage7.movies.features.categoryfilter.view.CategoryBottomSheet
+import com.mohnage7.movies.features.categoryfilter.view.POPULAR
 import com.mohnage7.movies.features.movies.model.Movie
 import com.mohnage7.movies.features.movies.repository.MoviesRepository
-
-import javax.inject.Inject
-
-import com.mohnage7.movies.features.categoryfilter.view.CategoryBottomSheet.POPULAR
+import com.mohnage7.movies.network.model.DataWrapper
 
 
-class MoviesViewModel : ViewModel() {
-
-    @Inject
-    internal var repository: MoviesRepository? = null
+class MoviesViewModel(private val repository: MoviesRepository) : ViewModel() {
 
     private val category = MutableLiveData<String>()
     private val searchBy = MutableLiveData<String>()
@@ -27,10 +19,9 @@ class MoviesViewModel : ViewModel() {
     private val searchMoviesList: LiveData<DataWrapper<List<Movie>>>
 
     init {
-        MoviesApplication.getInstance().dataComponent.inject(this)
-        category.setValue(Companion.getPOPULAR())
-        moviesList = Transformations.switchMap(category) { category -> repository!!.getMovies(category) }
-        searchMoviesList = Transformations.switchMap(searchBy) { query -> repository!!.search(query) }
+        category.value = POPULAR
+        moviesList = Transformations.switchMap(category) { category -> repository.getMovies(category) }
+        searchMoviesList = Transformations.switchMap(searchBy) { query -> repository.search(query) }
     }
 
     fun search(): LiveData<DataWrapper<List<Movie>>> {
@@ -39,7 +30,7 @@ class MoviesViewModel : ViewModel() {
 
 
     fun setFilterMovieBy(@CategoryBottomSheet.FilterBy filter: String) {
-        category.setValue(filter)
+        category.value = filter
     }
 
     fun setSearchBy(query: String) {

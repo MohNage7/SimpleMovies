@@ -1,4 +1,4 @@
-package com.mohnage7.movies.network
+package com.mohnage7.movies.network.adapter
 
 import androidx.lifecycle.LiveData
 import com.mohnage7.movies.network.model.ApiResponse

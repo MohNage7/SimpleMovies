@@ -1,27 +1,22 @@
 package com.mohnage7.movies.features.moviedetails.view
 
 import android.app.Activity
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-
-import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubeStandalonePlayer
-import com.google.android.youtube.player.YouTubeThumbnailLoader
-import com.google.android.youtube.player.YouTubeThumbnailView
+import com.mohnage7.movies.BuildConfig.YOUTUBE_KEY
 import com.mohnage7.movies.R
 import com.mohnage7.movies.base.BaseViewHolder
 import com.mohnage7.movies.features.moviedetails.model.Video
-import com.mohnage7.movies.utils.Constants
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.item_video.view.*
 
-import butterknife.BindView
-import butterknife.ButterKnife
 
-import com.mohnage7.movies.BuildConfig.YOUTUBE_KEY
+const val YOUTUBE_THUMBNAIL_BASE_URL = "https://img.youtube.com/vi/"
+const val YOUTUBE_THUMBNAIL_URL_JPG = "/0.jpg"
 
 class VideoAdapter(private val videoList: List<Video>?) : RecyclerView.Adapter<BaseViewHolder>() {
 
@@ -43,48 +38,28 @@ class VideoAdapter(private val videoList: List<Video>?) : RecyclerView.Adapter<B
     }
 
 
-    protected inner class MoviesViewHolder internal constructor(itemView: View) : BaseViewHolder(itemView) {
-        @BindView(R.id.youtube_thumbnail)
-        internal var youTubeThumbnailView: YouTubeThumbnailView? = null
-        @BindView(R.id.play_button)
-        internal var playButton: ImageButton? = null
-        @BindView(R.id.tailer_title_txt_view)
-        internal var trailerTitleTxtView: TextView? = null
-
-        init {
-            ButterKnife.bind(this, itemView)
-        }
+    private inner class MoviesViewHolder internal constructor(itemView: View) : BaseViewHolder(itemView) {
 
         override fun bindViews(position: Int) {
             super.bindViews(position)
             val video = videoList!![position]
             // set video title
-            trailerTitleTxtView!!.text = video.name
-            // load video thumbnail
-            val onThumbnailLoadedListener = object : YouTubeThumbnailLoader.OnThumbnailLoadedListener {
-                override fun onThumbnailError(youTubeThumbnailView: YouTubeThumbnailView, errorReason: YouTubeThumbnailLoader.ErrorReason) {
-                    playButton!!.visibility = View.GONE
-                }
+            itemView.trailerTitleTxtView.text = video.name
 
-                override fun onThumbnailLoaded(youTubeThumbnailView: YouTubeThumbnailView, s: String) {
-                    youTubeThumbnailView.visibility = View.VISIBLE
-                    playButton!!.visibility = View.VISIBLE
-                }
-            }
-            // init player
-            youTubeThumbnailView!!.initialize(YOUTUBE_KEY, object : YouTubeThumbnailView.OnInitializedListener {
-                override fun onInitializationSuccess(youTubeThumbnailView: YouTubeThumbnailView, youTubeThumbnailLoader: YouTubeThumbnailLoader) {
-                    youTubeThumbnailLoader.setVideo(video.key)
-                    youTubeThumbnailLoader.setOnThumbnailLoadedListener(onThumbnailLoadedListener)
-                }
+            Picasso.get()
+                    .load(video.getVideoThumbnail())
+                    .into(itemView.youTubeThumbnailView, object : Callback {
+                        override fun onError(e: Exception?) {
+                            itemView.playButton.visibility = View.GONE
+                        }
 
-                override fun onInitializationFailure(youTubeThumbnailView: YouTubeThumbnailView, youTubeInitializationResult: YouTubeInitializationResult) {
-                    //write something for failure
-                }
-            })
+                        override fun onSuccess() {
+                            itemView.playButton.visibility = View.VISIBLE
+                        }
+                    })
 
             // play video in full screen activity when user clicks
-            playButton!!.setOnClickListener { v ->
+            itemView.playButton!!.setOnClickListener {
                 val intent = YouTubeStandalonePlayer.createVideoIntent(itemView.context as Activity, YOUTUBE_KEY, video.key!!)
                 itemView.context.startActivity(intent)
             }
@@ -92,8 +67,9 @@ class VideoAdapter(private val videoList: List<Video>?) : RecyclerView.Adapter<B
 
 
         override fun clear() {
-            playButton!!.setOnClickListener(null)
-            trailerTitleTxtView!!.text = ""
+            itemView.playButton.setOnClickListener(null)
+            itemView.trailerTitleTxtView.text = ""
+            itemView.youTubeThumbnailView.setImageDrawable(null)
         }
     }
 }

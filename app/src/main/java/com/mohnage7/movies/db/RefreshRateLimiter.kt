@@ -1,4 +1,4 @@
-package com.mohnage7.movies.utils
+package com.mohnage7.movies.db
 
 import android.os.SystemClock
 import java.util.*

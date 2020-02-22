@@ -2,37 +2,28 @@ package com.mohnage7.movies.features.movies.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-
-import com.mohnage7.movies.network.ApiResponse
-import com.mohnage7.movies.network.RestApiService
-import com.mohnage7.movies.base.DataWrapper
 import com.mohnage7.movies.db.AppExecutors
-import com.mohnage7.movies.db.MovieDao
-import com.mohnage7.movies.db.MovieDatabase
+import com.mohnage7.movies.db.CACHE_TIMEOUT
+import com.mohnage7.movies.db.RefreshRateLimiter
+import com.mohnage7.movies.db.dao.MovieDao
 import com.mohnage7.movies.features.movies.model.Movie
 import com.mohnage7.movies.features.movies.model.MoviesResponse
 import com.mohnage7.movies.network.NetworkBoundResource
-import com.mohnage7.movies.utils.RefreshRateLimiter
-import java.util.concurrent.TimeUnit
-
-import javax.inject.Inject
-
+import com.mohnage7.movies.network.RestApiService
+import com.mohnage7.movies.network.model.ApiResponse
+import com.mohnage7.movies.network.model.DataWrapper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.TimeUnit
 
-import com.mohnage7.movies.utils.Constants.CACHE_TIMEOUT
+class MoviesRepository
+constructor(private val apiService: RestApiService,
+            private val appExecutors: AppExecutors,
+            private val movieDao: MovieDao) {
 
-class MoviesRepository @Inject
-constructor(private val apiService: RestApiService, movieDatabase: MovieDatabase, private val appExecutors: AppExecutors) {
     private val mutableSearchMovieLiveData = MutableLiveData<DataWrapper<List<Movie>>>()
-    private val movieDao: MovieDao
-    private val refreshRateLimiter: RefreshRateLimiter<*>
-
-    init {
-        movieDao = movieDatabase.movieDao
-        refreshRateLimiter = RefreshRateLimiter(TimeUnit.MINUTES, CACHE_TIMEOUT.toLong())
-    }
+    private val refreshRateLimiter: RefreshRateLimiter<String> = RefreshRateLimiter(TimeUnit.MINUTES, CACHE_TIMEOUT.toLong())
 
     fun getMovies(category: String): LiveData<DataWrapper<List<Movie>>> {
         return object : NetworkBoundResource<List<Movie>, MoviesResponse>(appExecutors) {
@@ -68,14 +59,21 @@ constructor(private val apiService: RestApiService, movieDatabase: MovieDatabase
         val call = apiService.search(query)
         call.enqueue(object : Callback<MoviesResponse> {
             override fun onResponse(call: Call<MoviesResponse>, response: Response<MoviesResponse>) {
-                val mResponse = response.body()
-                if (mResponse != null) {
+                response.body()?.let { mResponse ->
                     if (mResponse.movieList != null && !mResponse.movieList!!.isEmpty()) {
-                        mutableSearchMovieLiveData.setValue(DataWrapper(DataWrapper.Status.SUCCESS, mResponse.movieList, null))
+                        mutableSearchMovieLiveData.setValue(
+                                DataWrapper(
+                                        DataWrapper.Status.SUCCESS,
+                                        mResponse.movieList,
+                                        null))
                     } else {
-                        mutableSearchMovieLiveData.setValue(DataWrapper(DataWrapper.Status.ERROR, null, ""))
+                        mutableSearchMovieLiveData.setValue(
+                                DataWrapper(
+                                        DataWrapper.Status.ERROR,
+                                        null, ""))
                     }
                 }
+
             }
 
             override fun onFailure(call: Call<MoviesResponse>, error: Throwable) {

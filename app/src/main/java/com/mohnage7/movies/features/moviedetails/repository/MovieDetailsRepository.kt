@@ -1,35 +1,25 @@
 package com.mohnage7.movies.features.moviedetails.repository
 
-import android.content.Context
 import androidx.lifecycle.LiveData
-
-import com.mohnage7.movies.network.ApiResponse
-import com.mohnage7.movies.network.RestApiService
-import com.mohnage7.movies.base.DataWrapper
 import com.mohnage7.movies.db.AppExecutors
-import com.mohnage7.movies.db.MovieDatabase
-import com.mohnage7.movies.db.VideosDao
+import com.mohnage7.movies.db.CACHE_TIMEOUT
+import com.mohnage7.movies.db.dao.VideosDao
 import com.mohnage7.movies.features.moviedetails.model.MovieVideos
 import com.mohnage7.movies.network.NetworkBoundResource
+import com.mohnage7.movies.network.RestApiService
+import com.mohnage7.movies.network.model.ApiResponse
+import com.mohnage7.movies.network.model.DataWrapper
 
-import javax.inject.Inject
 
-import com.mohnage7.movies.utils.Constants.CACHE_TIMEOUT
+class MovieDetailsRepository
+constructor(private val apiService: RestApiService, private val appExecutors: AppExecutors, private val videosDao: VideosDao) {
 
-
-class MovieDetailsRepository @Inject
-constructor(private val apiService: RestApiService, private val appExecutors: AppExecutors, context: Context) {
-    private val videosDao: VideosDao
-
-    init {
-        videosDao = MovieDatabase.getDatabaseInstance(context).videosDao
-    }
 
     fun getVideos(movieId: Int): LiveData<DataWrapper<MovieVideos>> {
         return object : NetworkBoundResource<MovieVideos, MovieVideos>(appExecutors) {
 
             override fun saveCallResult(item: MovieVideos) {
-                item.timestamp = (System.currentTimeMillis() / 1000).toInt()
+                item.timestamp = getCurrentTime()
                 videosDao.insertAll(item)
             }
 
@@ -37,10 +27,9 @@ constructor(private val apiService: RestApiService, private val appExecutors: Ap
                 if (data == null)
                     return true
                 else {
-                    val currentTime = (System.currentTimeMillis() / 1000).toInt()
+                    val currentTime = getCurrentTime()
                     val isCacheExpired = currentTime - data.timestamp >= CACHE_TIMEOUT * 60
-                    return (data.videos == null
-                            || data.videos!!.isEmpty() || isCacheExpired)
+                    return (data.videos == null || data.videos!!.isEmpty() || isCacheExpired)
                 }
             }
 
@@ -52,5 +41,9 @@ constructor(private val apiService: RestApiService, private val appExecutors: Ap
                 return apiService.getVideos(movieId)
             }
         }.asLiveData
+    }
+
+    private fun getCurrentTime(): Int {
+        return (System.currentTimeMillis() / 1000).toInt()
     }
 }

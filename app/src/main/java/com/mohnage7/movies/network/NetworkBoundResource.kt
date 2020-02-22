@@ -5,8 +5,9 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 
-import com.mohnage7.movies.base.DataWrapper
 import com.mohnage7.movies.db.AppExecutors
+import com.mohnage7.movies.network.model.ApiResponse
+import com.mohnage7.movies.network.model.DataWrapper
 
 // ResultType: Type for the DataWrapper data. (database cache)
 // RequestType: Type for the API response. (network request)
@@ -86,7 +87,7 @@ abstract class NetworkBoundResource<ResultType, RequestType>(private val appExec
     }
 
     private fun processResponse(response: ApiResponse.ApiSuccessResponse<*>): ResultType {
-        return response.body
+        return response.body as ResultType
     }
 
     private fun setValue(newValue: DataWrapper<ResultType>) {

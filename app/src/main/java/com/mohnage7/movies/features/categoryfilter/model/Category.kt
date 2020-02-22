@@ -3,29 +3,17 @@ package com.mohnage7.movies.features.categoryfilter.model
 import android.os.Parcel
 import android.os.Parcelable
 
-import com.mohnage7.movies.features.categoryfilter.view.CategoryBottomSheet
 
+data class Category(var name: String? = null,
+                    var categoryPath: String? = null,
+                    var drawable: Int = 0, var isChecked: Boolean = false
+) : Parcelable {
 
-class Category : Parcelable {
-    var drawable: Int = 0
-        private set
-    var name: String? = null
-        private set
-    var isChecked: Boolean = false
-    var categoryPath: String? = null
-        private set
-
-    constructor(name: String, @CategoryBottomSheet.FilterBy categoryPath: String, drawable: Int) {
-        this.drawable = drawable
-        this.categoryPath = categoryPath
-        this.name = name
-    }
-
-    protected constructor(`in`: Parcel) {
-        drawable = `in`.readInt()
-        name = `in`.readString()
-        isChecked = `in`.readByte().toInt() != 0
-        categoryPath = `in`.readString()
+    constructor(parcel: Parcel) : this(
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readInt(),
+            parcel.readByte() != 0.toByte()) {
     }
 
     override fun equals(o: Any?): Boolean {
@@ -39,26 +27,24 @@ class Category : Parcelable {
         return name == category!!.name && drawable == category.drawable
     }
 
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(name)
+        parcel.writeString(categoryPath)
+        parcel.writeInt(drawable)
+        parcel.writeByte(if (isChecked) 1 else 0)
+    }
+
     override fun describeContents(): Int {
         return 0
     }
 
-    override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeInt(drawable)
-        dest.writeString(name)
-        dest.writeByte((if (isChecked) 1 else 0).toByte())
-        dest.writeString(categoryPath)
-    }
+    companion object CREATOR : Parcelable.Creator<Category> {
+        override fun createFromParcel(parcel: Parcel): Category {
+            return Category(parcel)
+        }
 
-    companion object {
-        val CREATOR: Parcelable.Creator<Category> = object : Parcelable.Creator<Category> {
-            override fun createFromParcel(`in`: Parcel): Category {
-                return Category(`in`)
-            }
-
-            override fun newArray(size: Int): Array<Category> {
-                return arrayOfNulls(size)
-            }
+        override fun newArray(size: Int): Array<Category?> {
+            return arrayOfNulls(size)
         }
     }
 }

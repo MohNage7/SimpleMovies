@@ -1,12 +1,9 @@
-package com.mohnage7.movies.db
+package com.mohnage7.movies.db.converters
 
 import androidx.room.TypeConverter
-
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.mohnage7.movies.features.moviedetails.model.Video
-
-import java.lang.reflect.Type
 
 class VideoConverter {
 

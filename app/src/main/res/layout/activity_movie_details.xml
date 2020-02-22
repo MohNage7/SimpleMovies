@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".view.ui.MoviesActivity">
+    tools:context=".features.movies.view.MoviesActivity">
 
 
     <androidx.core.widget.NestedScrollView
@@ -21,7 +21,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <TextView
-                android:id="@+id/movie_title_txt_view"
+                android:id="@+id/titleTxtView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -34,10 +34,10 @@
                 tools:text="Spider-Man: Far from Home" />
 
             <TextView
-                android:id="@+id/movie_rating"
+                android:id="@+id/movieRatingTxtView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/movie_title_txt_view"
+                android:layout_below="@id/titleTxtView"
                 android:layout_alignParentEnd="true"
                 android:layout_marginLeft="@dimen/dp_16"
                 android:layout_marginRight="@dimen/dp_16"
@@ -48,10 +48,10 @@
                 tools:text="7.7" />
 
             <TextView
-                android:id="@+id/movie_date_txt_view"
+                android:id="@+id/movieReleaseDateTxtView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/movie_title_txt_view"
+                android:layout_below="@id/titleTxtView"
                 android:layout_alignParentStart="true"
                 android:layout_marginLeft="@dimen/dp_16"
                 android:layout_marginRight="@dimen/dp_16"
@@ -61,7 +61,7 @@
 
 
             <TextView
-                android:id="@+id/movie_description"
+                android:id="@+id/descTxtView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/line"
@@ -76,14 +76,14 @@
             <View
                 android:id="@+id/line"
                 style="@style/vertical_line_thin"
-                android:layout_below="@+id/movie_date_txt_view" />
+                android:layout_below="@+id/movieReleaseDateTxtView" />
 
 
             <TextView
-                android:id="@+id/videos_tv"
+                android:id="@+id/videosTxtView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/movie_description"
+                android:layout_below="@id/descTxtView"
                 android:padding="@dimen/dp_16"
                 android:text="@string/videos"
                 android:textColor="@android:color/white"
@@ -91,10 +91,10 @@
                 android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
+                android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/videos_tv"
+                android:layout_below="@+id/videosTxtView"
                 android:layout_marginStart="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_16"
                 android:layout_marginBottom="@dimen/dp_16"
@@ -104,7 +104,7 @@
                 layout="@layout/layout_loading_videos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/videos_tv" />
+                android:layout_below="@+id/videosTxtView" />
 
         </RelativeLayout>
 
@@ -112,14 +112,14 @@
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
+        android:id="@+id/mAppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar"
+            android:id="@+id/collapsingToolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
@@ -127,7 +127,7 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <ImageView
-                android:id="@+id/back_drop_iv"
+                android:id="@+id/backdropImgView"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:scaleType="centerCrop"

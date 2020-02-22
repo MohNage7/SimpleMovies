@@ -6,12 +6,13 @@
     android:layout_margin="@dimen/dp_4">
 
 
-    <com.google.android.youtube.player.YouTubeThumbnailView
-        android:id="@+id/youtube_thumbnail"
+    <ImageView
+        android:id="@+id/youTubeThumbnailView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:visibility="visible" />
+
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -19,7 +20,7 @@
         android:layout_height="match_parent"/>
 
     <ImageButton
-        android:id="@+id/play_button"
+        android:id="@+id/playButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -29,7 +30,7 @@
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/tailer_title_txt_view"
+        android:id="@+id/trailerTitleTxtView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"

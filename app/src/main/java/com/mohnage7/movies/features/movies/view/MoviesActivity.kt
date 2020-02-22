@@ -1,69 +1,45 @@
 package com.mohnage7.movies.features.movies.view
 
 import android.app.SearchManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
-import android.widget.TextView
-
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
-import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-
-import com.facebook.shimmer.ShimmerFrameLayout
 import com.mohnage7.movies.R
 import com.mohnage7.movies.base.BaseActivity
-import com.mohnage7.movies.features.movies.view.adapter.MoviesAdapter
-import com.mohnage7.movies.features.movies.view.adapter.SearchAdapter
+import com.mohnage7.movies.features.categoryfilter.callback.OnCategorySelectedListener
 import com.mohnage7.movies.features.categoryfilter.model.Category
-import com.mohnage7.movies.features.movies.model.Movie
-import com.mohnage7.movies.features.movies.view.callback.OnCategorySelectedListener
-import com.mohnage7.movies.features.movies.view.callback.OnMovieClickListener
 import com.mohnage7.movies.features.categoryfilter.view.CategoryBottomSheet
+import com.mohnage7.movies.features.categoryfilter.view.POPULAR
+import com.mohnage7.movies.features.categoryfilter.view.SELECTED_CATEGORY
 import com.mohnage7.movies.features.moviedetails.view.MovieDetailsActivity
+import com.mohnage7.movies.features.moviedetails.view.MovieDetailsActivity.Companion.MOVIE_EXTRA
+import com.mohnage7.movies.features.movies.model.Movie
+import com.mohnage7.movies.features.movies.view.adapter.ITEM_MOVIE
+import com.mohnage7.movies.features.movies.view.adapter.ITEM_SEARCH
+import com.mohnage7.movies.features.movies.view.adapter.MoviesAdapter
+import com.mohnage7.movies.features.movies.view.callback.OnMovieClickListener
 import com.mohnage7.movies.features.movies.viewmodel.MoviesViewModel
-
-import butterknife.BindView
-
-import com.mohnage7.movies.features.categoryfilter.view.CategoryBottomSheet.POPULAR
-import com.mohnage7.movies.features.categoryfilter.view.CategoryBottomSheet.SELECTED_CATEGORY
-import com.mohnage7.movies.features.moviedetails.view.MovieDetailsActivity.MOVIE_EXTRA
+import com.mohnage7.movies.network.model.DataWrapper
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.layout_loading_movies.*
+import kotlinx.android.synthetic.main.layout_no_data.*
+import kotlinx.android.synthetic.main.layout_search.*
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class MoviesActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener, OnMovieClickListener, OnCategorySelectedListener {
 
-    @BindView(R.id.toolbar)
-    internal var toolbar: Toolbar? = null
-    @BindView(R.id.recycler_view)
-    internal var moviesRecyclerView: RecyclerView? = null
-    @BindView(R.id.search_recycler_view)
-    internal var searchRecyclerView: RecyclerView? = null
-    @BindView(R.id.swipe_layout)
-    internal var swipeRefreshLayout: SwipeRefreshLayout? = null
-    @BindView(R.id.no_data_layout)
-    internal var noDataLayout: RelativeLayout? = null
-    @BindView(R.id.no_data_tv)
-    internal var noDataTxtView: TextView? = null
-    @BindView(R.id.no_search_data_tv)
-    internal var noSearchDataTxtView: TextView? = null
-    @BindView(R.id.shimmer_loading_layout)
-    internal var shimmerFrameLayout: ShimmerFrameLayout? = null
-    @BindView(R.id.search_card_view)
-    internal var searchLayout: CardView? = null
-    @BindView(R.id.progress_bar)
-    internal var progressBar: ProgressBar? = null
 
-    private var moviesViewModel: MoviesViewModel? = null
+    private val moviesViewModel: MoviesViewModel by viewModel()
     private var selectedCategory: Category? = null
 
     override fun layoutRes(): Int {
@@ -74,28 +50,24 @@ class MoviesActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener, OnM
         super.onCreate(savedInstanceState)
         setSupportActionBar(toolbar)
         // set swipe listener
-        swipeRefreshLayout!!.setOnRefreshListener(this)
-        // init view model
-        moviesViewModel = ViewModelProviders.of(this).get(MoviesViewModel::class.java)
+        swipeRefreshLayout.setOnRefreshListener(this)
         // load movies from network or db source
-        getMovies(getSelectedCategory().categoryPath)
+        getMovies(getSelectedCategory().categoryPath!!)
         // listen to search data
-        moviesViewModel!!.search().observe(this, { dataWrapper ->
+        moviesViewModel.search().observe(this, Observer { dataWrapper ->
             when (dataWrapper.status) {
                 DataWrapper.Status.LOADING -> showSearchLoading()
                 DataWrapper.Status.ERROR -> handleSearchError(dataWrapper.message)
                 DataWrapper.Status.SUCCESS -> setupSearchAdapter(dataWrapper.data)
-                else -> {
-                }
             }
         })
     }
 
     private fun showSearchLoading() {
-        searchLayout!!.visibility = View.VISIBLE
-        progressBar!!.visibility = View.VISIBLE
-        noSearchDataTxtView!!.visibility = View.GONE
-        searchRecyclerView!!.visibility = View.GONE
+        searchLayout.visibility = View.VISIBLE
+        progressBar.visibility = View.VISIBLE
+        noSearchDataTxtView.visibility = View.GONE
+        searchRecyclerView.visibility = View.GONE
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -128,7 +100,7 @@ class MoviesActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener, OnM
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                searchLayout!!.visibility = View.GONE
+                searchLayout.visibility = View.GONE
                 searchView.onActionViewExpanded()
                 return true
             }
@@ -140,7 +112,7 @@ class MoviesActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener, OnM
         if (item.itemId == R.id.action_categories) {
             val categoryBottomSheet = CategoryBottomSheet()
             val bundle = Bundle()
-            bundle.putParcelable(Companion.getSELECTED_CATEGORY(), getSelectedCategory())
+            bundle.putParcelable(SELECTED_CATEGORY, getSelectedCategory())
             categoryBottomSheet.arguments = bundle
             categoryBottomSheet.show(supportFragmentManager, null)
         }
@@ -153,13 +125,13 @@ class MoviesActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener, OnM
      */
     private fun getSelectedCategory(): Category {
         if (selectedCategory == null)
-            selectedCategory = Category(getString(R.string.popular), Companion.getPOPULAR(), R.drawable.ic_popular)
-        return selectedCategory
+            selectedCategory = Category(getString(R.string.popular), POPULAR, R.drawable.ic_popular)
+        return selectedCategory as Category
     }
 
 
-    private fun getMovies(@CategoryBottomSheet.FilterBy category: String?) {
-        moviesViewModel!!.moviesList.observe(this, { dataWrapper ->
+    private fun getMovies(@CategoryBottomSheet.FilterBy category: String) {
+        moviesViewModel.moviesList.observe(this, Observer { dataWrapper ->
             when (dataWrapper.status) {
                 DataWrapper.Status.LOADING -> showLoadingLayout()
                 DataWrapper.Status.SUCCESS -> {
@@ -170,85 +142,85 @@ class MoviesActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener, OnM
                     hideLoadingLayout()
                     handleMoviesListError(dataWrapper.message)
                 }
-                else -> {
-                }
             }
         })
-        moviesViewModel!!.setFilterMovieBy(category)
+        moviesViewModel.setFilterMovieBy(category)
     }
 
     private fun searchInMovies(query: String) {
-        moviesViewModel!!.setSearchBy(query)
+        moviesViewModel.setSearchBy(query)
     }
 
     private fun showLoadingLayout() {
-        shimmerFrameLayout!!.startShimmer()
-        shimmerFrameLayout!!.visibility = View.VISIBLE
-        moviesRecyclerView!!.visibility = View.GONE
-        noDataLayout!!.visibility = View.GONE
+        shimmerFrameLayout.startShimmer()
+        shimmerFrameLayout.visibility = View.VISIBLE
+        recyclerView.visibility = View.GONE
+        noDataLayout.visibility = View.GONE
     }
 
     private fun hideLoadingLayout() {
-        if (swipeRefreshLayout!!.isRefreshing)
-            swipeRefreshLayout!!.isRefreshing = false
-        shimmerFrameLayout!!.stopShimmer()
-        shimmerFrameLayout!!.visibility = View.GONE
-        moviesRecyclerView!!.visibility = View.VISIBLE
+        if (swipeRefreshLayout.isRefreshing)
+            swipeRefreshLayout.isRefreshing = false
+        shimmerFrameLayout.stopShimmer()
+        shimmerFrameLayout.visibility = View.GONE
+        recyclerView.visibility = View.VISIBLE
     }
 
 
     private fun setDataViewsVisibility(dataAvailable: Boolean) {
         if (dataAvailable) {
-            moviesRecyclerView!!.visibility = View.VISIBLE
-            noDataLayout!!.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
+            noDataLayout.visibility = View.GONE
         } else {
-            moviesRecyclerView!!.visibility = View.GONE
-            noDataLayout!!.visibility = View.VISIBLE
+            recyclerView.visibility = View.GONE
+            noDataLayout.visibility = View.VISIBLE
         }
     }
 
 
     private fun handleMoviesListError(message: String?) {
         setDataViewsVisibility(false)
-        noDataTxtView!!.text = message
+        noDataTxtView.text = message
     }
 
     private fun handleSearchError(message: String?) {
         setSearchViewsVisibility(false)
-        noSearchDataTxtView!!.text = if (message == null || message.isEmpty()) getString(R.string.no_data_found) else message
+        noSearchDataTxtView.text = if (message == null || message.isEmpty()) getString(R.string.no_data_found) else message
     }
 
     private fun setSearchViewsVisibility(dataAvailable: Boolean) {
-        searchLayout!!.visibility = View.VISIBLE
-        progressBar!!.visibility = View.GONE
+        searchLayout.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
         if (dataAvailable) {
-            searchRecyclerView!!.visibility = View.VISIBLE
-            noSearchDataTxtView!!.visibility = View.GONE
+            searchRecyclerView.visibility = View.VISIBLE
+            noSearchDataTxtView.visibility = View.GONE
         } else {
-            searchRecyclerView!!.visibility = View.GONE
-            noSearchDataTxtView!!.visibility = View.VISIBLE
+            searchRecyclerView.visibility = View.GONE
+            noSearchDataTxtView.visibility = View.VISIBLE
         }
     }
 
     private fun setupMoviesRecycler(moviesList: List<Movie>?) {
         hideLoadingLayout()
         setDataViewsVisibility(true)
-        val adapter = MoviesAdapter(moviesList, this)
+        val adapter = MoviesAdapter(moviesList, ITEM_MOVIE, this)
         val layoutManager = GridLayoutManager(this, 3)
-        moviesRecyclerView!!.layoutManager = layoutManager
-        moviesRecyclerView!!.adapter = adapter
+        recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = adapter
     }
 
     private fun setupSearchAdapter(moviesList: List<Movie>?) {
         setSearchViewsVisibility(true)
-        val adapter = SearchAdapter(moviesList, this)
-        searchRecyclerView!!.layoutManager = LinearLayoutManager(this)
-        searchRecyclerView!!.adapter = adapter
+        val adapter = MoviesAdapter(moviesList, ITEM_SEARCH, this)
+        searchRecyclerView.layoutManager = LinearLayoutManager(this)
+        searchRecyclerView.adapter = adapter
     }
 
 
     override fun onRefresh() {
-        moviesViewModel!!.setFilterMovieBy(selectedCategory!!.categoryPath)
+        selectedCategory?.categoryPath?.let {
+            moviesViewModel.setFilterMovieBy(it)
+        }
     }
 
     override fun onMovieClick(movie: Movie, view: View) {
@@ -260,11 +232,11 @@ class MoviesActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener, OnM
         overridePendingTransition(R.anim.anim_slide_up, R.anim.no_animation)
     }
 
-    override fun onCategoryClick(selectedCategory: Category) {
+    override fun onCategorySelected(selectedCategory: Category) {
         this.selectedCategory = selectedCategory
         // change activity title
-        toolbar!!.title = selectedCategory.name
+        toolbar.title = selectedCategory.name
         // refresh movies list
-        moviesViewModel!!.setFilterMovieBy(selectedCategory.categoryPath)
+        onRefresh()
     }
 }

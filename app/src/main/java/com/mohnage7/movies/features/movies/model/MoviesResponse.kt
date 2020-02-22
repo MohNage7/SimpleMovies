@@ -12,5 +12,4 @@ class MoviesResponse {
     @SerializedName("results")
     @Expose
     var movieList: List<Movie>? = null
-
 }

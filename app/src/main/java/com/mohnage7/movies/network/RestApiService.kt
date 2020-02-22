@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 
 import com.mohnage7.movies.features.moviedetails.model.MovieVideos
 import com.mohnage7.movies.features.movies.model.MoviesResponse
+import com.mohnage7.movies.network.model.ApiResponse
 
 import retrofit2.Call
 import retrofit2.http.GET
@@ -15,7 +16,6 @@ interface RestApiService {
 
     @GET("movie/{category}")
     fun getMovies(@Path("category") category: String): LiveData<ApiResponse<MoviesResponse>>
-
 
     @GET("movie/{id}/videos")
     fun getVideos(@Path("id") id: Int): LiveData<ApiResponse<MovieVideos>>

@@ -2,11 +2,8 @@ package com.mohnage7.movies.base
 
 import android.os.Bundle
 import android.widget.Toast
-
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
-
-import butterknife.ButterKnife
 
 abstract class BaseActivity : AppCompatActivity() {
     private var mToast: Toast? = null
@@ -17,7 +14,6 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layoutRes())
-        ButterKnife.bind(this)
     }
 
     /**

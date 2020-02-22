@@ -6,63 +6,46 @@ import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.StringDef
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mohnage7.movies.R
+import com.mohnage7.movies.features.categoryfilter.callback.OnCategoryClickListener
+import com.mohnage7.movies.features.categoryfilter.callback.OnCategorySelectedListener
 import com.mohnage7.movies.features.categoryfilter.model.Category
-import com.mohnage7.movies.features.movies.view.callback.OnCategoryClickListener
-import com.mohnage7.movies.features.movies.view.callback.OnCategorySelectedListener
+import kotlinx.android.synthetic.main.bottomsheet_category_filter.view.*
 
-import java.lang.annotation.Retention
-import java.util.ArrayList
-
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnClick
-
-import java.lang.annotation.RetentionPolicy.SOURCE
+const val SELECTED_CATEGORY = "selected_category"
+const val POPULAR = "popular"
+const val TOP_RATED = "top_rated"
+const val UP_COMING = "upcoming"
 
 class CategoryBottomSheet : BottomSheetDialogFragment(), OnCategoryClickListener {
-    @BindView(R.id.paymentRecyclerView)
-    internal var marketRecyclerView: RecyclerView? = null
-    private var categoryList: MutableList<Category>? = null
+
     private var paymentMethodsAdapter: CategoryAdapter? = null
     private var selectedCategory: Category? = null
     private var onCategorySelectedInterActionListener: OnCategorySelectedListener? = null
 
-    /**
-     * Create categories to be filtered with. can be replaced later with list from API.
-     *
-     * @return List of categories
-     */
-    private val categoriesList: List<Category>
-        get() {
-            categoryList = ArrayList()
-            categoryList!!.add(Category(getString(R.string.popular), POPULAR, R.drawable.ic_popular))
-            categoryList!!.add(Category(getString(R.string.top_rated), TOP_RATED, R.drawable.ic_top_rated))
-            categoryList!!.add(Category(getString(R.string.upcoming), UP_COMING, R.drawable.ic_upcoming))
-            return categoryList
-        }
-
-    @Retention(SOURCE)
+    @Retention()
     @StringDef(POPULAR, TOP_RATED, UP_COMING)
     annotation class FilterBy
+
+    private var categoriesList: List<Category>? = null
 
     override fun setupDialog(dialog: Dialog, style: Int) {
         super.setupDialog(dialog, style)
         if (activity == null || activity!!.isFinishing) return
-        val rootView = activity!!.layoutInflater.inflate(R.layout.bottomsheet_category_filter, null, false)
-        ButterKnife.bind(this, rootView)
+        val rootView = View.inflate(context, R.layout.bottomsheet_category_filter, null);
         dialog.setContentView(rootView)
         setBottomBarStyle(dialog)
-        setupPaymentMethodsRecycler()
+        setupRecyclerView(rootView.categoryRecyclerView)
+        rootView.selectCategoryBtn.setOnClickListener { onCategorySelected() }
     }
 
     private fun setBottomBarStyle(dialog: Dialog) {
-        if (dialog.window != null) {
-            val bottomSheet = dialog.window!!.findViewById<FrameLayout>(R.id.design_bottom_sheet)
+        dialog.window?.let {
+            val bottomSheet = it.findViewById<FrameLayout>(R.id.design_bottom_sheet)
             bottomSheet.setBackgroundResource(R.color.transparent)
             setStyle(DialogFragment.STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
         }
@@ -71,10 +54,14 @@ class CategoryBottomSheet : BottomSheetDialogFragment(), OnCategoryClickListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val bundle = arguments
-        if (bundle != null && bundle.containsKey(SELECTED_CATEGORY)) {
-            selectedCategory = bundle.getParcelable(SELECTED_CATEGORY)
+        arguments?.let {
+            selectedCategory = it.getParcelable(SELECTED_CATEGORY)
         }
+
+        categoriesList = listOf(
+                Category(getString(R.string.popular), POPULAR, R.drawable.ic_popular),
+                Category(getString(R.string.top_rated), TOP_RATED, R.drawable.ic_top_rated),
+                Category(getString(R.string.upcoming), UP_COMING, R.drawable.ic_upcoming))
     }
 
     override fun onAttach(context: Context) {
@@ -86,14 +73,13 @@ class CategoryBottomSheet : BottomSheetDialogFragment(), OnCategoryClickListener
         }
     }
 
-    private fun setupPaymentMethodsRecycler() {
-        val categoryList = categoriesList
-        paymentMethodsAdapter = CategoryAdapter(categoryList, this)
-        marketRecyclerView!!.layoutManager = LinearLayoutManager(activity)
-        marketRecyclerView!!.adapter = paymentMethodsAdapter
+    private fun setupRecyclerView(categoryRecyclerView: RecyclerView) {
+        paymentMethodsAdapter = CategoryAdapter(categoriesList!!, this)
+        categoryRecyclerView.layoutManager = LinearLayoutManager(activity)
+        categoryRecyclerView.adapter = paymentMethodsAdapter
         // if there's default selected category display check icon for it.
-        if (selectedCategory != null) {
-            onCategoryClick(selectedCategory)
+        selectedCategory?.let {
+            onCategoryClick(it)
         }
     }
 
@@ -105,23 +91,16 @@ class CategoryBottomSheet : BottomSheetDialogFragment(), OnCategoryClickListener
      */
     override fun onCategoryClick(selectedCategory: Category) {
         this.selectedCategory = selectedCategory
-        for (category in categoryList!!) {
+        categoriesList?.forEach { category ->
             category.isChecked = category == selectedCategory
         }
         paymentMethodsAdapter!!.notifyDataSetChanged()
     }
 
-    @OnClick(R.id.select_category_btn)
-    internal fun onCategorySelected() {
+    private fun onCategorySelected() {
         dismiss()
-        onCategorySelectedInterActionListener!!.onCategoryClick(selectedCategory!!)
-    }
-
-    companion object {
-
-        val SELECTED_CATEGORY = "selected_category"
-        val POPULAR = "popular"
-        val TOP_RATED = "top_rated"
-        val UP_COMING = "upcoming"
+        selectedCategory?.let {
+            onCategorySelectedInterActionListener!!.onCategorySelected(it)
+        }
     }
 }
