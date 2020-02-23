@@ -4,7 +4,7 @@ A Simple movies application that is built with MVVM , Dagger2 , LiveData and Roo
 
 <img src="https://github.com/MohNage7/SimpleMovies/blob/master/images/device-2019-10-06-195420.png"  width="241" height="500" /> <img src="https://github.com/MohNage7/SimpleMovies/blob/master/images/device-2019-10-06-195444.png"   width="241" height="500" />
 <img src="https://github.com/MohNage7/SimpleMovies/blob/master/images/device-2019-10-06-195336.png"  width="241" height="500" /><img src="https://github.com/MohNage7/SimpleMovies/blob/master/images/device-2019-10-06-221226.png"  width="241" height="500" />
-<img src="https://github.com/MohNage7/SimpleMovies/blob/master/images/device-2019-10-06-195524.png"  width="241" height="500" /><img src="https://github.com/MohNage7/SimpleMovies/blob/master/images/device-2019-10-06-195544.png"  width="241" height="500" />
+<img src="https://github.com/MohNage7/SimpleMovies/blob/master/images/device-2020-02-23-020209.png"  width="241" height="500" /><img src="https://github.com/MohNage7/SimpleMovies/blob/master/images/device-2020-02-23-020123.png"  width="241" height="500" />
 <img src="https://github.com/MohNage7/SimpleMovies/blob/master/images/device-2019-10-06-221246.png"  width="500" height="241" />
 
 
@@ -34,8 +34,7 @@ The repository is the only class that depends on multiple other classes; on a pe
 * MovieDetailsActivity: Displays movie details and it's vidoes 
 * CategoryBottomSheet: Switch between different categories
 * CategoryAdapter: inflates and displays filterList that is provided from CategoryBottomSheet
-* MoviesAdapter: inflates and displays moviesList that is provided from MoviesActivity's fetch movies by filter result.
-* SearchAdapter: inflates and displays moviesList that is provided from MoviesActivity's search result.
+* MoviesAdapter: inflates and displays moviesList that is provided from MoviesActivity's fetch movies by filter/search result.
 * VideoAdapter: inflates and displays videoList that is provided from MovieDetailsActivity.
 * OnCategoryClickListener: responsible for interaction between CategoryAdapter and CategoryBottomSheet
 * OnCategorySelectedListener: responsible for interaction between CategoryBottomSheet and MoviesActivity
@@ -76,12 +75,10 @@ When the entry is loaded from the database for the first time, NetworkBoundResou
 * ApiResponse: a generic class for handling responses from retrofit 
 * RestApiService: provides and end point for our remote service
 * BaseActivity: is extended by any activity in the app. it declares unified structure and contains common methods for our activities.
-* BaseFragment: the same as BaseActivity but for fragments
 * BaseViewHolder: the same as BaseActivity but for ViewHolder.
 * DataWrapper: Wrappes our data call back with status and message to be able to handle different status inside views.
 
 ## Utils
-* Constants: Contains all our final strings in the app. 
 * LiveDataCallAdapter and LiveDataCallAdapterFactory: is used to get LiveData as call back from retrofit.
 * RefreshRateLimiter: is a factor in refreshing data decision.
 
@@ -89,14 +86,11 @@ When the entry is loaded from the database for the first time, NetworkBoundResou
  Dependency injection allows classes to define their dependencies without constructing them. 
  At runtime, another class is responsible for providing these dependencies
 
-* For DI we are using dagger2 
-* DataModule: define classes and methods which provide dependencies
-* DataComponent: is used by Dagger 2 to generate code which uses the modules to fulfill the requested dependencies.
+* For DI we are using Koin 
 
 ## Libraries 
-* [ButterKnife](https://jakewharton.github.io/butterknife/) for injecting views
 * [Retrofit](https://square.github.io/retrofit/) for consuming REST APIs
-* [Dagger2](https://github.com/google/dagger) for dependency injection 
+* [Koin](https://insert-koin.io/) for dependency injection 
 * [Picasso](https://square.github.io/picasso/) for loading images from remote servers
 * [YouTubeAndroidPlayerApi](https://developers.google.com/youtube/android/player/) to preview and play videos 
 * [Facebook Shimmer](https://github.com/facebook/shimmer-android) library as loading animation
