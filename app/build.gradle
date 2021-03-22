@@ -21,13 +21,13 @@ android {
             buildConfigField("String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
             buildConfigField("String", "YOUTUBE_KEY", "\"AIzaSyDTsUcgRF_0mn-6bUoRRB3jqvoL0iPl85k\"")
             buildConfigField("String", "IMAGE_BASE_URL", "\"https://image.tmdb.org/t/p/w342\"")
-            buildConfigField "String", "API_KEY", '"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkYzgwNDFkZmUyYmU1MWRiNTJlMGZmYWFkYWJlYmM4ZCIsInN1YiI6IjVhOTcyMzQwMGUwYTI2MDE1ZjAwNTMyMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.sogWARNxbqkf9fduFd1vetw8KUyDn5xY1Bb_4sVJS1o"'
+            buildConfigField "String", "API_KEY", '""'
         }
         release {
             buildConfigField("String", "BASE_URL", "\"https://api.themoviedb.org/3/\"")
             buildConfigField("String", "YOUTUBE_KEY", "\"AIzaSyDTsUcgRF_0mn-6bUoRRB3jqvoL0iPl85k\"")
             buildConfigField("String", "IMAGE_BASE_URL", "\"https://image.tmdb.org/t/p/w342\"")
-            buildConfigField "String", "API_KEY", '"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkYzgwNDFkZmUyYmU1MWRiNTJlMGZmYWFkYWJlYmM4ZCIsInN1YiI6IjVhOTcyMzQwMGUwYTI2MDE1ZjAwNTMyMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.sogWARNxbqkf9fduFd1vetw8KUyDn5xY1Bb_4sVJS1o"'
+            buildConfigField "String", "API_KEY", '""'
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
